@@ -45,10 +45,10 @@ export interface PlayerStats {
   sh_count: number;
   s_count: number;
   a_count: number;
-  /** 1-indexed global rank; 0 = unranked. */
-  rank: number;
-  /** 1-indexed country rank; 0 = unranked. */
-  country_rank: number;
+  /** 1-indexed global rank; null = unranked. */
+  rank: number | null;
+  /** 1-indexed country rank; null = unranked. */
+  country_rank: number | null;
 }
 
 export interface SearchPlayer {

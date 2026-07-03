@@ -145,7 +145,7 @@ export function PlayerPage() {
                 Global rank
               </p>
               <p className="text-xl font-semibold text-accent">
-                {stats && stats.rank > 0 ? `#${formatNumber(stats.rank)}` : "—"}
+                {stats?.rank != null ? `#${formatNumber(stats.rank)}` : "—"}
               </p>
             </div>
             <div className="space-y-0.5">
@@ -153,7 +153,7 @@ export function PlayerPage() {
                 Country rank
               </p>
               <p className="text-xl font-semibold">
-                {stats && stats.country_rank > 0
+                {stats?.country_rank != null
                   ? `#${formatNumber(stats.country_rank)}`
                   : "—"}
               </p>
