@@ -10,7 +10,6 @@ import type {
   PlayerStats,
   PlayerStatus,
   SearchPlayer,
-  ServerMeta,
   ServerStats,
 } from "@/lib/api/types";
 
@@ -26,8 +25,6 @@ export type ScoreScope = "best" | "recent";
 
 export const api = {
   fetchServerStats: () => apiGet<ServerStats>("/v2/server/stats"),
-
-  fetchServerMeta: () => apiGet<ServerMeta>("/v2/server/meta"),
 
   fetchLeaderboard: (
     mode: number,
