@@ -7,6 +7,7 @@ import { GradeBadge } from "@/components/GradeBadge";
 import { ModBadges } from "@/components/ModBadges";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { EmptyState, ErrorState, LoadingState } from "@/components/states";
+import { Card } from "@/components/ui/Card";
 import { api } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/http";
 import { beatmapCoverUrl } from "@/lib/assets";
@@ -57,9 +58,9 @@ export function BeatmapPage() {
   const statusDisplay = rankedStatusDisplay(beatmap!.status);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* map header */}
-      <section className="overflow-hidden rounded-2xl border border-line bg-surface">
+      <Card padded={false}>
         <div className="relative h-44">
           <img
             src={beatmapCoverUrl(beatmap!.set_id)}
@@ -77,7 +78,7 @@ export function BeatmapPage() {
           </span>
         </div>
 
-        <div className="space-y-4 px-6 pb-5">
+        <div className="space-y-4 px-6 pb-6 sm:px-8">
           <div className="-mt-10 relative">
             <h1 className="text-2xl font-bold drop-shadow">
               {beatmap!.artist} - {beatmap!.title}
@@ -127,7 +128,7 @@ export function BeatmapPage() {
             </a>
           </div>
         </div>
-      </section>
+      </Card>
 
       <ModeSwitcher modeId={modeId} onChange={setModeId} />
 
@@ -173,7 +174,7 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
   const showsPerformanceFirst = modeId >= 4;
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+    <Card padded={false} className="overflow-x-auto">
       <table className="w-full min-w-[720px] text-sm">
         <thead>
           <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-muted">
@@ -251,6 +252,6 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </Card>
   );
 }

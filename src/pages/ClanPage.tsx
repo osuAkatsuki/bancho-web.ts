@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { Avatar } from "@/components/Avatar";
 import { Flag } from "@/components/Flag";
 import { ErrorState, LoadingState } from "@/components/states";
+import { Card } from "@/components/ui/Card";
 import { api } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/http";
 import { formatDate } from "@/lib/format";
@@ -54,32 +55,28 @@ export function ClanPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <section className="overflow-hidden rounded-2xl border border-line bg-surface">
+    <div className="space-y-8">
+      <Card padded={false}>
         <div className="h-20 bg-gradient-to-r from-accent/30 via-purple-500/25 to-sky-500/25" />
-        <div className="px-6 pb-5">
-          <div className="-mt-6 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-bold">
-                <span className="text-accent">[{clan.tag}]</span> {clan.name}
-              </h1>
-              <p className="mt-1 text-sm text-muted">
-                Founded {formatDate(clan.created_at)} ·{" "}
-                {members.length === 1 ? "1 member" : `${members.length} members`}
-              </p>
-            </div>
-          </div>
+        <div className="space-y-1.5 px-6 py-6 sm:px-8">
+          <h1 className="text-2xl font-bold">
+            <span className="text-accent">[{clan.tag}]</span> {clan.name}
+          </h1>
+          <p className="text-sm text-muted">
+            Founded {formatDate(clan.created_at)} ·{" "}
+            {members.length === 1 ? "1 member" : `${members.length} members`}
+          </p>
         </div>
-      </section>
+      </Card>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <h2 className="text-lg font-bold">Members</h2>
         {membersQuery.isPending ? (
           <LoadingState label="Loading members..." />
         ) : membersQuery.error ? (
           <ErrorState error={membersQuery.error} />
         ) : (
-          <ul className="grid gap-2 sm:grid-cols-2">
+          <ul className="grid gap-3 sm:grid-cols-2">
             {members.map((member) => (
               <li key={member.id}>
                 <Link

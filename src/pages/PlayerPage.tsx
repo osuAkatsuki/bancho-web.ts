@@ -10,6 +10,8 @@ import { ModBadges } from "@/components/ModBadges";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { UserpageContent } from "@/components/UserpageContent";
 import { EmptyState, ErrorState, LoadingState } from "@/components/states";
+import { Card } from "@/components/ui/Card";
+import { PillTabs } from "@/components/ui/PillTabs";
 import { api, type ScoreScope } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/http";
 import type { MostPlayedMap, PlayerScore } from "@/lib/api/types";
@@ -88,19 +90,19 @@ export function PlayerPage() {
   const isRestricted = (player.priv & 1) === 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* profile header */}
-      <section className="overflow-hidden rounded-2xl border border-line bg-surface">
-        <div className="h-24 bg-gradient-to-r from-accent/40 via-purple-500/30 to-sky-500/30" />
-        <div className="flex flex-wrap items-end justify-between gap-4 px-6 pb-5">
-          <div className="flex items-end gap-4">
+      <Card padded={false}>
+        <div className="h-28 bg-gradient-to-r from-accent/40 via-purple-500/30 to-sky-500/30" />
+        <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 px-6 pb-6 sm:px-8">
+          <div className="flex items-end gap-5">
             <Avatar
               playerId={player.id}
               alt={`${player.name}'s avatar`}
-              className="-mt-10 h-24 w-24 rounded-2xl border-4 border-surface bg-surface-2 object-cover"
+              className="-mt-12 h-24 w-24 rounded-2xl border-4 border-surface bg-surface-2 object-cover"
             />
-            <div className="pb-1">
-              <div className="flex items-center gap-2.5">
+            <div className="space-y-1.5 pb-1">
+              <div className="flex items-center gap-3">
                 <Flag countryCode={player.country} className="h-5 w-7" />
                 {clanQuery.data && (
                   <Link
@@ -118,7 +120,7 @@ export function PlayerPage() {
                   }`}
                 />
               </div>
-              <p className="mt-1 text-sm text-muted">
+              <p className="text-sm text-muted">
                 {isOnline && statusQuery.data ? (
                   <span className="text-emerald-300">
                     {describeStatus(
@@ -134,8 +136,8 @@ export function PlayerPage() {
             </div>
           </div>
 
-          <div className="flex gap-6 pb-1 text-right">
-            <div>
+          <div className="flex gap-8 pb-1 text-right">
+            <div className="space-y-1">
               <p className="text-xs uppercase tracking-wide text-muted">
                 Global rank
               </p>
@@ -143,7 +145,7 @@ export function PlayerPage() {
                 {stats && stats.rank > 0 ? `#${formatNumber(stats.rank)}` : "—"}
               </p>
             </div>
-            <div>
+            <div className="space-y-1">
               <p className="text-xs uppercase tracking-wide text-muted">
                 Country rank
               </p>
@@ -155,7 +157,7 @@ export function PlayerPage() {
             </div>
           </div>
         </div>
-      </section>
+      </Card>
 
       {isRestricted && (
         <div className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
@@ -193,7 +195,7 @@ export function PlayerPage() {
           </section>
 
           {/* grade counts */}
-          <section className="flex flex-wrap items-center gap-6 rounded-2xl border border-line bg-surface px-6 py-4">
+          <section className="flex flex-wrap items-center gap-x-10 gap-y-3 rounded-2xl border border-line bg-surface px-6 py-4">
             <GradeCount grade="XH" count={stats.xh_count} />
             <GradeCount grade="X" count={stats.x_count} />
             <GradeCount grade="SH" count={stats.sh_count} />
@@ -209,32 +211,25 @@ export function PlayerPage() {
 
       {/* userpage */}
       {player.userpage_content && (
-        <section className="rounded-2xl border border-line bg-surface px-6 py-5">
+        <Card>
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
             About me
           </h2>
           <UserpageContent content={player.userpage_content} />
-        </section>
+        </Card>
       )}
 
       {/* score listings */}
       <section className="space-y-4">
-        <div className="flex rounded-xl bg-surface p-1">
-          {SCORE_TABS.map((entry) => (
-            <button
-              key={entry.tab}
-              type="button"
-              onClick={() => setTab(entry.tab)}
-              className={`flex-1 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
-                tab === entry.tab
-                  ? "bg-surface-3 text-slate-100"
-                  : "text-muted hover:text-slate-100"
-              }`}
-            >
-              {entry.label}
-            </button>
-          ))}
-        </div>
+        <PillTabs
+          tabs={SCORE_TABS.map((entry) => ({
+            value: entry.tab,
+            label: entry.label,
+          }))}
+          value={tab}
+          onChange={setTab}
+          grow
+        />
 
         {tab === "most_played" ? (
           <MostPlayedList playerId={playerId} modeId={modeId} />
@@ -327,7 +322,7 @@ function ScoreList({
   }
 
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-2">
       {data.map((score) => (
         <ScoreRow key={score.id} score={score} />
       ))}
@@ -338,7 +333,7 @@ function ScoreList({
 function ScoreRow({ score }: { score: PlayerScore }) {
   const beatmap = score.beatmap;
   return (
-    <li className="flex items-center gap-3 overflow-hidden rounded-xl border border-line bg-surface pr-4 hover:bg-surface-2">
+    <li className="flex items-center gap-4 overflow-hidden rounded-xl border border-line bg-surface pr-5 hover:bg-surface-2">
       {beatmap ? (
         <BeatmapThumb setId={beatmap.set_id} className="h-14 w-24 shrink-0" />
       ) : (
@@ -397,7 +392,7 @@ function MostPlayedList({
   }
 
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-2">
       {data.map((map) => (
         <MostPlayedRow key={map.id} map={map} />
       ))}
@@ -407,7 +402,7 @@ function MostPlayedList({
 
 function MostPlayedRow({ map }: { map: MostPlayedMap }) {
   return (
-    <li className="flex items-center gap-3 overflow-hidden rounded-xl border border-line bg-surface pr-4 hover:bg-surface-2">
+    <li className="flex items-center gap-4 overflow-hidden rounded-xl border border-line bg-surface pr-5 hover:bg-surface-2">
       <BeatmapThumb setId={map.set_id} className="h-14 w-24 shrink-0" />
       <div className="min-w-0 flex-1 py-2">
         <Link

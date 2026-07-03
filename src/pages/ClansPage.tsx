@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Pagination } from "@/components/Pagination";
+import { Card } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState, ErrorState, LoadingState } from "@/components/states";
 import { api } from "@/lib/api/client";
 import { formatDate } from "@/lib/format";
@@ -22,15 +24,11 @@ export function ClansPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Clans</h1>
-        <p className="mt-1 text-sm text-muted">
-          Player-run clans on the server. Clans are created and joined
-          in-game with the <code className="text-accent">!clan</code>{" "}
-          commands.
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        title="Clans"
+        description="Player-run clans on the server, created and joined in-game."
+      />
 
       {isPending ? (
         <LoadingState label="Loading clans..." />
@@ -40,13 +38,13 @@ export function ClansPage() {
         <EmptyState label="No clans have been created yet." />
       ) : (
         <>
-          <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+          <Card padded={false}>
             <ul className="divide-y divide-line/50">
               {data.data.map((clan) => (
                 <li key={clan.id}>
                   <Link
                     to={`/clan/${clan.id}`}
-                    className="flex items-center gap-4 px-5 py-3 hover:bg-surface-2"
+                    className="flex items-center gap-4 px-6 py-3.5 hover:bg-surface-2"
                   >
                     <span className="w-20 shrink-0 font-bold text-accent">
                       [{clan.tag}]
@@ -61,7 +59,7 @@ export function ClansPage() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
 
           <Pagination
             page={page}

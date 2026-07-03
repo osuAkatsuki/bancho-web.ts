@@ -6,6 +6,9 @@ import { Flag } from "@/components/Flag";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState, ErrorState, LoadingState } from "@/components/states";
+import { Card } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PillTabs } from "@/components/ui/PillTabs";
 import { api, type LeaderboardSort } from "@/lib/api/client";
 import type { LeaderboardEntry } from "@/lib/api/types";
 import { COUNTRIES } from "@/lib/countries";
@@ -105,13 +108,11 @@ export function LeaderboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Leaderboard</h1>
-        <p className="mt-1 text-sm text-muted">
-          The top players on the server.
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        title="Leaderboard"
+        description="The top players on the server."
+      />
 
       <ModeSwitcher
         modeId={modeId}
@@ -119,22 +120,14 @@ export function LeaderboardPage() {
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex rounded-xl bg-surface p-1">
-          {SORTS.map((entry) => (
-            <button
-              key={entry.sort}
-              type="button"
-              onClick={() => updateParams({ sort: entry.sort })}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                sort === entry.sort
-                  ? "bg-surface-3 text-slate-100"
-                  : "text-muted hover:text-slate-100"
-              }`}
-            >
-              {entry.label}
-            </button>
-          ))}
-        </div>
+        <PillTabs
+          tabs={SORTS.map((entry) => ({
+            value: entry.sort,
+            label: entry.label,
+          }))}
+          value={sort}
+          onChange={(nextSort) => updateParams({ sort: nextSort })}
+        />
 
         <select
           value={country}
@@ -158,7 +151,7 @@ export function LeaderboardPage() {
         <EmptyState label="No ranked players found." />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+          <Card padded={false} className="overflow-x-auto">
             <table className="w-full min-w-[680px] text-sm">
               <thead>
                 <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-muted">
@@ -181,13 +174,13 @@ export function LeaderboardPage() {
                     className="border-b border-line/50 last:border-b-0 hover:bg-surface-2"
                   >
                     <td
-                      className={`px-4 py-2 text-right font-bold ${
+                      className={`px-4 py-2.5 text-right font-bold ${
                         RANK_COLORS[entry.rank] ?? "text-muted"
                       }`}
                     >
                       #{entry.rank}
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2.5">
                       <Link
                         to={`/u/${entry.player_id}`}
                         className="group flex items-center gap-2.5"
@@ -207,16 +200,16 @@ export function LeaderboardPage() {
                         </span>
                       </Link>
                     </td>
-                    <td className="px-4 py-2 text-right font-semibold text-accent">
+                    <td className="px-4 py-2.5 text-right font-semibold text-accent">
                       {sortValue(entry, sort)}
                     </td>
-                    <td className="px-4 py-2 text-right text-muted">
+                    <td className="px-4 py-2.5 text-right text-muted">
                       {formatAccuracy(entry.acc)}
                     </td>
-                    <td className="px-4 py-2 text-right text-muted">
+                    <td className="px-4 py-2.5 text-right text-muted">
                       {formatNumber(entry.plays)}
                     </td>
-                    <td className="hidden px-4 py-2 text-right text-xs text-muted sm:table-cell">
+                    <td className="hidden px-4 py-2.5 text-right text-xs text-muted sm:table-cell">
                       {formatNumber(entry.xh_count + entry.x_count)} /{" "}
                       {formatNumber(entry.sh_count + entry.s_count)} /{" "}
                       {formatNumber(entry.a_count)}
@@ -225,7 +218,7 @@ export function LeaderboardPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </Card>
 
           <Pagination
             page={page}

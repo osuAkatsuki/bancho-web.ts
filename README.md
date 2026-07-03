@@ -54,10 +54,28 @@ BANCHO_DOMAIN=cmyui.xyz                   # builds the api.{DOMAIN} Host header
 Other scripts:
 
 ```bash
-npm run build      # typecheck + production build into dist/
-npm run typecheck  # typecheck only
-npm run preview    # serve the production build locally
+npm run build            # typecheck + production build into dist/
+npm run typecheck        # typecheck only
+npm run preview          # serve the production build locally
+npm run storybook        # component workshop at http://localhost:6006
+npm run build-storybook  # static storybook build
 ```
+
+## Design system
+
+The brand theme (dark plum + osu!-pink accent) lives in
+`tailwind.config.js` as Tailwind color tokens (`base`, `surface`,
+`surface-2/3`, `line`, `muted`, `accent`). Shared primitives in
+`src/components/ui/` keep spacing & shape consistent:
+
+- `Card` — the standard surface container (default `px-6 py-5` padding,
+  or edge-to-edge for tables & media)
+- `PageHeader` — page title + description block
+- `PillTabs` — the segmented pill-tab control (mode switchers, sorts, tabs)
+
+Run **Storybook** to iterate on components and the theme in isolation —
+the `Design/Theme` story documents the palette, type scale, spacing
+conventions and radii.
 
 ## Configuration
 

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
+import { Card } from "@/components/ui/Card";
 import { api } from "@/lib/api/client";
 import { env } from "@/lib/env";
 import { formatNumber } from "@/lib/format";
@@ -17,7 +18,7 @@ export function HomePage() {
   });
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* hero */}
       <section className="relative overflow-hidden rounded-2xl border border-line bg-surface px-6 py-16 text-center sm:px-12">
         <div
@@ -66,7 +67,7 @@ export function HomePage() {
 
       {/* how to connect */}
       <section id="how-to-connect" className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-line bg-surface p-6">
+        <Card>
           <p className="text-sm font-semibold text-accent">Step 1</p>
           <h2 className="mt-1 font-bold">Install osu!</h2>
           <p className="mt-2 text-sm text-muted">
@@ -81,9 +82,9 @@ export function HomePage() {
             </a>{" "}
             if you don't have it already.
           </p>
-        </div>
+        </Card>
 
-        <div className="rounded-2xl border border-line bg-surface p-6">
+        <Card>
           <p className="text-sm font-semibold text-accent">Step 2</p>
           <h2 className="mt-1 font-bold">Point it at the server</h2>
           <p className="mt-2 text-sm text-muted">
@@ -92,16 +93,22 @@ export function HomePage() {
           <code className="mt-3 block overflow-x-auto rounded-lg bg-base px-3 py-2 text-xs text-slate-200">
             osu!.exe -devserver {env.banchoDomain}
           </code>
-        </div>
+        </Card>
 
-        <div className="rounded-2xl border border-line bg-surface p-6">
+        <Card>
           <p className="text-sm font-semibold text-accent">Step 3</p>
           <h2 className="mt-1 font-bold">Create an account</h2>
           <p className="mt-2 text-sm text-muted">
-            Launch the game and register from the login panel — your account
-            is created on the server the first time you sign up in-game.
+            <Link
+              to="/register"
+              className="text-accent hover:text-accent-hover"
+            >
+              Register here
+            </Link>{" "}
+            on the website, then sign in with the same credentials in the
+            game client.
           </p>
-        </div>
+        </Card>
       </section>
     </div>
   );
