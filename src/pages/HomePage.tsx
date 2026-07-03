@@ -1,0 +1,108 @@
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+
+import { api } from "@/lib/api/client";
+import { env } from "@/lib/env";
+import { formatNumber } from "@/lib/format";
+import { usePageTitle } from "@/lib/usePageTitle";
+
+export function HomePage() {
+  usePageTitle("Home");
+
+  const { data: stats } = useQuery({
+    queryKey: ["server-stats"],
+    queryFn: () => api.fetchServerStats(),
+    refetchInterval: 60_000,
+    select: (envelope) => envelope.data,
+  });
+
+  return (
+    <div className="space-y-10">
+      {/* hero */}
+      <section className="relative overflow-hidden rounded-2xl border border-line bg-surface px-6 py-16 text-center sm:px-12">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-32 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-accent/25 blur-3xl"
+        />
+        <h1 className="relative text-4xl font-extrabold tracking-tight sm:text-5xl">
+          Welcome to <span className="text-accent">{env.appName}</span>
+        </h1>
+        <p className="relative mx-auto mt-4 max-w-xl text-muted">
+          A private osu! server with global leaderboards for vanilla, relax
+          and autopilot — jump in and start setting scores.
+        </p>
+
+        <div className="relative mt-8 flex items-center justify-center gap-3">
+          <a
+            href="#how-to-connect"
+            className="rounded-xl bg-accent px-6 py-2.5 font-semibold text-white transition-colors hover:bg-accent-hover"
+          >
+            Get started
+          </a>
+          <Link
+            to="/leaderboard"
+            className="rounded-xl border border-line bg-surface-2 px-6 py-2.5 font-semibold transition-colors hover:bg-surface-3"
+          >
+            Leaderboards
+          </Link>
+        </div>
+
+        <div className="relative mt-10 flex items-center justify-center gap-8 text-sm">
+          <div>
+            <p className="text-2xl font-bold text-accent">
+              {stats ? formatNumber(stats.online_players) : "—"}
+            </p>
+            <p className="text-muted">players online</p>
+          </div>
+          <div className="h-10 w-px bg-line" />
+          <div>
+            <p className="text-2xl font-bold">
+              {stats ? formatNumber(stats.total_players) : "—"}
+            </p>
+            <p className="text-muted">registered players</p>
+          </div>
+        </div>
+      </section>
+
+      {/* how to connect */}
+      <section id="how-to-connect" className="grid gap-4 sm:grid-cols-3">
+        <div className="rounded-2xl border border-line bg-surface p-6">
+          <p className="text-sm font-semibold text-accent">Step 1</p>
+          <h2 className="mt-1 font-bold">Install osu!</h2>
+          <p className="mt-2 text-sm text-muted">
+            Download and install the game client from{" "}
+            <a
+              href="https://osu.ppy.sh/home/download"
+              target="_blank"
+              rel="noreferrer"
+              className="text-accent hover:text-accent-hover"
+            >
+              osu.ppy.sh
+            </a>{" "}
+            if you don't have it already.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-line bg-surface p-6">
+          <p className="text-sm font-semibold text-accent">Step 2</p>
+          <h2 className="mt-1 font-bold">Point it at the server</h2>
+          <p className="mt-2 text-sm text-muted">
+            Add the devserver flag to your osu! shortcut's target:
+          </p>
+          <code className="mt-3 block overflow-x-auto rounded-lg bg-base px-3 py-2 text-xs text-slate-200">
+            osu!.exe -devserver {env.banchoDomain}
+          </code>
+        </div>
+
+        <div className="rounded-2xl border border-line bg-surface p-6">
+          <p className="text-sm font-semibold text-accent">Step 3</p>
+          <h2 className="mt-1 font-bold">Create an account</h2>
+          <p className="mt-2 text-sm text-muted">
+            Launch the game and register from the login panel — your account
+            is created on the server the first time you sign up in-game.
+          </p>
+        </div>
+      </section>
+    </div>
+  );
+}
