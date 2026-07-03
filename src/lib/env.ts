@@ -19,4 +19,7 @@ export const env = {
   // must match the server's CAPTCHA_PROVIDER; empty = captcha disabled
   captchaProvider: readCaptchaProvider(),
   captchaSiteKey: import.meta.env.VITE_CAPTCHA_SITE_KEY ?? "",
+  // shown in the footer when set; keep in sync with bancho.py's
+  // DISCORD_INVITE setting
+  discordInviteUrl: import.meta.env.VITE_DISCORD_INVITE ?? "",
 } as const;

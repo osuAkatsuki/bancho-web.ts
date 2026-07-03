@@ -89,6 +89,7 @@ All `VITE_*` variables are baked in at build time (see `.env.example`):
 | `VITE_BANCHO_DOMAIN`    | Domain in "how to connect" instructions | `cmyui.xyz`        |
 | `VITE_API_BASE_URL`     | Base url for api requests              | `/api`              |
 | `VITE_AVATARS_BASE_URL` | Base url for avatars (`a.{DOMAIN}`)    | `https://a.cmyui.xyz` |
+| `VITE_DISCORD_INVITE`   | Discord invite shown in the footer (keep in sync with bancho.py's `DISCORD_INVITE`) | empty = hidden |
 
 ## Deployment
 
