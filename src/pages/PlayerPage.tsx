@@ -93,15 +93,18 @@ export function PlayerPage() {
     <div className="space-y-8">
       {/* profile header */}
       <Card padded={false}>
-        <div className="h-28 bg-gradient-to-r from-accent/40 via-purple-500/30 to-sky-500/30" />
-        <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 px-6 pb-6 sm:px-8">
-          <div className="flex items-end gap-5">
-            <Avatar
-              playerId={player.id}
-              alt={`${player.name}'s avatar`}
-              className="-mt-12 h-24 w-24 rounded-2xl border-4 border-surface bg-surface-2 object-cover"
-            />
-            <div className="space-y-1.5 pb-1">
+        <div className="relative h-28 bg-gradient-to-r from-accent/40 via-purple-500/30 to-sky-500/30">
+          {/* straddles the banner seam; the info strip below reserves its width */}
+          <Avatar
+            playerId={player.id}
+            alt={`${player.name}'s avatar`}
+            className="absolute -bottom-10 left-6 h-24 w-24 rounded-2xl border-4 border-surface bg-surface-2 object-cover sm:left-8"
+          />
+        </div>
+        <div className="flex min-h-[5.5rem] flex-wrap items-center justify-between gap-x-8 gap-y-4 px-6 py-4 sm:px-8">
+          <div className="flex items-center gap-5">
+            <div className="w-24 shrink-0" aria-hidden />
+            <div className="space-y-1.5">
               <div className="flex items-center gap-3">
                 <Flag countryCode={player.country} className="h-5 w-7" />
                 {clanQuery.data && (
@@ -136,7 +139,7 @@ export function PlayerPage() {
             </div>
           </div>
 
-          <div className="flex gap-8 pb-1 text-right">
+          <div className="flex gap-8 text-right">
             <div className="space-y-1">
               <p className="text-xs uppercase tracking-wide text-muted">
                 Global rank
