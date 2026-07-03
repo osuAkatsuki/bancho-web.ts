@@ -100,8 +100,20 @@ Build the static bundle and serve `dist/` from any web server. The SPA needs:
    an explicit `Access-Control-Allow-Origin` — avoid unless you need it.)
 
 ```nginx
+# http context: rate limits for the authentication endpoints.
+# registration is limited strictly to prevent automated account
+# creation; logins are limited to slow down credential stuffing.
+limit_req_zone $binary_remote_addr zone=bancho_registrations:10m rate=1r/m;
+limit_req_zone $binary_remote_addr zone=bancho_logins:10m rate=10r/m;
+
 server {
     server_name osu.example.com;
+
+    # bancho.py resolves client ips from these headers (used for
+    # geolocation during registration & for rate limiting fairness)
+    proxy_set_header Host api.example.com;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
     # ---- security headers ----
     # csp: allowlist of what pages may load/execute; limits the blast
@@ -122,14 +134,23 @@ server {
         try_files $uri /index.html;
     }
 
+    location = /api/v2/accounts {
+        limit_req zone=bancho_registrations burst=3 nodelay;
+        limit_req_status 429;
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:10000;
+    }
+
+    location = /api/v2/sessions {
+        limit_req zone=bancho_logins burst=5 nodelay;
+        limit_req_status 429;
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:10000;
+    }
+
     location /api/ {
         rewrite ^/api/(.*)$ /$1 break;
         proxy_pass http://127.0.0.1:10000;
-        proxy_set_header Host api.example.com;
-        # bancho.py resolves client ips from these headers
-        # (used for geolocation during account registration)
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 }
 ```

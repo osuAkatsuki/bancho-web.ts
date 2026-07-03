@@ -50,10 +50,12 @@ async function request<T>(
   } | null;
 
   if (!response.ok || body?.status !== "success" || body.data === undefined) {
-    throw new ApiError(
-      body?.error ?? `Request failed (${response.status})`,
-      response.status,
-    );
+    // rate-limit responses come from the proxy layer without our envelope
+    const fallback =
+      response.status === 429
+        ? "You're doing that too often — please wait a minute and try again."
+        : `Request failed (${response.status})`;
+    throw new ApiError(body?.error ?? fallback, response.status);
   }
 
   return { data: body.data, meta: body.meta ?? {} };
