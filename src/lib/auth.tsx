@@ -41,6 +41,8 @@ interface AuthContextValue {
    */
   avatarVersion: number;
   refreshAvatar: () => void;
+  /** replace the cached signed-in player after a profile update */
+  updatePlayer: (player: Player) => void;
   login: (username: string, password: string) => Promise<void>;
   register: (args: {
     username: string;
@@ -60,6 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshAvatar = useCallback(() => {
     setAvatarVersion((current) => current + 1);
+  }, []);
+
+  const updatePlayer = useCallback((updated: Player) => {
+    setPlayer(updated);
   }, []);
 
   // a 401 from any endpoint means the session is gone (it can be
@@ -116,11 +122,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       avatarVersion,
       refreshAvatar,
+      updatePlayer,
       login,
       register,
       logout,
     }),
-    [player, isLoading, avatarVersion, refreshAvatar, login, register, logout],
+    [
+      player,
+      isLoading,
+      avatarVersion,
+      refreshAvatar,
+      updatePlayer,
+      login,
+      register,
+      logout,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

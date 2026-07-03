@@ -1,4 +1,4 @@
-import { apiDelete, apiGet, apiPost, apiPut } from "@/lib/api/http";
+import { apiDelete, apiGet, apiPatch, apiPost, apiPut } from "@/lib/api/http";
 import type {
   Beatmap,
   Clan,
@@ -135,6 +135,21 @@ export const api = {
   fetchCurrentSession: () => apiGet<Player>("/v2/sessions/current"),
 
   deleteCurrentSession: () => apiDelete<null>("/v2/sessions/current"),
+
+  updateProfile: (
+    playerId: number,
+    args: {
+      username?: string;
+      country?: string;
+      preferred_mode?: number;
+      userpage_content?: string;
+    },
+  ) => apiPatch<Player>(`/v2/players/${playerId}`, args),
+
+  changePassword: (
+    playerId: number,
+    args: { current_password: string; new_password: string },
+  ) => apiPut<null>(`/v2/players/${playerId}/password`, args),
 
   uploadAvatar: (playerId: number, file: File) => {
     const form = new FormData();
