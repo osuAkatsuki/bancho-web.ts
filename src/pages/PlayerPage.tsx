@@ -90,32 +90,32 @@ export function PlayerPage() {
   const isRestricted = (player.priv & 1) === 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* profile header */}
       <Card padded={false}>
-        <div className="relative h-28 bg-gradient-to-r from-accent/40 via-purple-500/30 to-sky-500/30">
+        <div className="relative h-24 bg-gradient-to-r from-accent/25 via-accent-2/15 to-surface-2">
           {/* straddles the banner seam; the info strip below reserves its width */}
           <Avatar
             playerId={player.id}
             alt={`${player.name}'s avatar`}
-            className="absolute -bottom-10 left-6 h-24 w-24 rounded-2xl border-4 border-surface bg-surface-2 object-cover sm:left-8"
+            className="absolute -bottom-9 left-5 h-20 w-20 rounded-xl border-2 border-surface bg-surface-2 object-cover sm:left-6"
           />
         </div>
-        <div className="flex min-h-[5.5rem] flex-wrap items-center justify-between gap-x-8 gap-y-4 px-6 py-4 sm:px-8">
-          <div className="flex items-center gap-5">
-            <div className="w-24 shrink-0" aria-hidden />
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-3">
+        <div className="flex min-h-[4.75rem] flex-wrap items-center justify-between gap-x-8 gap-y-3 px-5 py-3.5 sm:px-6">
+          <div className="flex items-center gap-4">
+            <div className="w-20 shrink-0" aria-hidden />
+            <div className="space-y-1">
+              <div className="flex items-center gap-2.5">
                 <Flag countryCode={player.country} className="h-5 w-7" />
                 {clanQuery.data && (
                   <Link
                     to={`/clan/${clanQuery.data.id}`}
-                    className="text-lg font-bold text-accent hover:text-accent-hover"
+                    className="text-base font-semibold text-accent hover:text-accent-hover"
                   >
                     [{clanQuery.data.tag}]
                   </Link>
                 )}
-                <h1 className="text-2xl font-bold">{player.name}</h1>
+                <h1 className="text-xl font-semibold">{player.name}</h1>
                 <span
                   title={isOnline ? "Online" : "Offline"}
                   className={`h-3 w-3 rounded-full ${
@@ -139,20 +139,20 @@ export function PlayerPage() {
             </div>
           </div>
 
-          <div className="flex gap-8 text-right">
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wide text-muted">
+          <div className="flex gap-7 text-right">
+            <div className="space-y-0.5">
+              <p className="text-[11px] uppercase tracking-wider text-muted">
                 Global rank
               </p>
-              <p className="text-2xl font-bold text-accent">
+              <p className="text-xl font-semibold text-accent">
                 {stats && stats.rank > 0 ? `#${formatNumber(stats.rank)}` : "—"}
               </p>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wide text-muted">
+            <div className="space-y-0.5">
+              <p className="text-[11px] uppercase tracking-wider text-muted">
                 Country rank
               </p>
-              <p className="text-2xl font-bold">
+              <p className="text-xl font-semibold">
                 {stats && stats.country_rank > 0
                   ? `#${formatNumber(stats.country_rank)}`
                   : "—"}
@@ -198,7 +198,7 @@ export function PlayerPage() {
           </section>
 
           {/* grade counts */}
-          <section className="flex flex-wrap items-center gap-x-10 gap-y-3 rounded-2xl border border-line bg-surface px-6 py-4">
+          <section className="flex flex-wrap items-center gap-x-9 gap-y-3 rounded-2xl border border-line bg-surface px-5 py-3">
             <GradeCount grade="XH" count={stats.xh_count} />
             <GradeCount grade="X" count={stats.x_count} />
             <GradeCount grade="SH" count={stats.sh_count} />
@@ -248,12 +248,12 @@ function LevelBar({ totalScore }: { totalScore: number }) {
   const { level, progress } = getLevel(totalScore);
 
   return (
-    <section className="flex items-center gap-4 rounded-2xl border border-line bg-surface px-6 py-4">
-      <span className="text-sm font-semibold text-muted">Level</span>
-      <span className="text-2xl font-extrabold text-accent">{level}</span>
-      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-3">
+    <section className="flex items-center gap-4 rounded-2xl border border-line bg-surface px-5 py-3">
+      <span className="text-xs font-medium uppercase tracking-wider text-muted">Level</span>
+      <span className="text-xl font-semibold text-accent">{level}</span>
+      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-3">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-accent to-purple-400"
+          className="h-full rounded-full bg-gradient-to-r from-accent to-accent-2"
           style={{ width: `${Math.round(progress * 100)}%` }}
         />
       </div>
@@ -275,9 +275,9 @@ function StatCard({
 }) {
   return (
     <div className="rounded-2xl border border-line bg-surface px-4 py-3">
-      <p className="text-xs uppercase tracking-wide text-muted">{label}</p>
+      <p className="text-[11px] uppercase tracking-wider text-muted">{label}</p>
       <p
-        className={`mt-1 text-lg font-bold ${highlight ? "text-accent" : ""}`}
+        className={`mt-1 text-lg font-semibold ${highlight ? "text-accent" : ""}`}
       >
         {value}
       </p>
@@ -325,7 +325,7 @@ function ScoreList({
   }
 
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-1.5">
       {data.map((score) => (
         <ScoreRow key={score.id} score={score} />
       ))}
@@ -336,11 +336,11 @@ function ScoreList({
 function ScoreRow({ score }: { score: PlayerScore }) {
   const beatmap = score.beatmap;
   return (
-    <li className="flex items-center gap-4 overflow-hidden rounded-xl border border-line bg-surface pr-5 hover:bg-surface-2">
+    <li className="flex items-center gap-3.5 overflow-hidden rounded-xl border border-line bg-surface pr-4 transition-colors hover:bg-surface-2">
       {beatmap ? (
-        <BeatmapThumb setId={beatmap.set_id} className="h-14 w-24 shrink-0" />
+        <BeatmapThumb setId={beatmap.set_id} className="h-12 w-[5.25rem] shrink-0" />
       ) : (
-        <span className="block h-14 w-24 shrink-0 bg-surface-3" />
+        <span className="block h-12 w-[5.25rem] shrink-0 bg-surface-3" />
       )}
       <GradeBadge grade={score.grade} />
 
@@ -395,7 +395,7 @@ function MostPlayedList({
   }
 
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-1.5">
       {data.map((map) => (
         <MostPlayedRow key={map.id} map={map} />
       ))}
@@ -405,8 +405,8 @@ function MostPlayedList({
 
 function MostPlayedRow({ map }: { map: MostPlayedMap }) {
   return (
-    <li className="flex items-center gap-4 overflow-hidden rounded-xl border border-line bg-surface pr-5 hover:bg-surface-2">
-      <BeatmapThumb setId={map.set_id} className="h-14 w-24 shrink-0" />
+    <li className="flex items-center gap-3.5 overflow-hidden rounded-xl border border-line bg-surface pr-4 transition-colors hover:bg-surface-2">
+      <BeatmapThumb setId={map.set_id} className="h-12 w-[5.25rem] shrink-0" />
       <div className="min-w-0 flex-1 py-2">
         <Link
           to={`/b/${map.id}`}

@@ -108,7 +108,7 @@ export function LeaderboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Leaderboard"
         description="The top players on the server."
@@ -155,14 +155,14 @@ export function LeaderboardPage() {
             <table className="w-full min-w-[680px] text-sm">
               <thead>
                 <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="px-4 py-3 text-right">Rank</th>
-                  <th className="px-4 py-3">Player</th>
-                  <th className="px-4 py-3 text-right">
+                  <th className="px-4 py-2.5 text-right">Rank</th>
+                  <th className="px-4 py-2.5">Player</th>
+                  <th className="px-4 py-2.5 text-right">
                     {SORTS.find((entry) => entry.sort === sort)?.label}
                   </th>
-                  <th className="px-4 py-3 text-right">Accuracy</th>
-                  <th className="px-4 py-3 text-right">Playcount</th>
-                  <th className="hidden px-4 py-3 text-right sm:table-cell">
+                  <th className="px-4 py-2.5 text-right">Accuracy</th>
+                  <th className="px-4 py-2.5 text-right">Playcount</th>
+                  <th className="hidden px-4 py-2.5 text-right sm:table-cell">
                     SS / S / A
                   </th>
                 </tr>
@@ -174,13 +174,13 @@ export function LeaderboardPage() {
                     className="border-b border-line/50 last:border-b-0 hover:bg-surface-2"
                   >
                     <td
-                      className={`px-4 py-2.5 text-right font-bold ${
+                      className={`px-4 py-2 text-right font-bold ${
                         RANK_COLORS[entry.rank] ?? "text-muted"
                       }`}
                     >
                       #{entry.rank}
                     </td>
-                    <td className="px-4 py-2.5">
+                    <td className="px-4 py-2">
                       <Link
                         to={`/u/${entry.player_id}`}
                         className="group flex items-center gap-2.5"
@@ -200,16 +200,16 @@ export function LeaderboardPage() {
                         </span>
                       </Link>
                     </td>
-                    <td className="px-4 py-2.5 text-right font-semibold text-accent">
+                    <td className="px-4 py-2 text-right font-semibold text-accent">
                       {sortValue(entry, sort)}
                     </td>
-                    <td className="px-4 py-2.5 text-right text-muted">
+                    <td className="px-4 py-2 text-right text-muted">
                       {formatAccuracy(entry.acc)}
                     </td>
-                    <td className="px-4 py-2.5 text-right text-muted">
+                    <td className="px-4 py-2 text-right text-muted">
                       {formatNumber(entry.plays)}
                     </td>
-                    <td className="hidden px-4 py-2.5 text-right text-xs text-muted sm:table-cell">
+                    <td className="hidden px-4 py-2 text-right text-xs text-muted sm:table-cell">
                       {formatNumber(entry.xh_count + entry.x_count)} /{" "}
                       {formatNumber(entry.sh_count + entry.s_count)} /{" "}
                       {formatNumber(entry.a_count)}

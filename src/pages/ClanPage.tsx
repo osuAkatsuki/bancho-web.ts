@@ -55,11 +55,11 @@ export function ClanPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <Card padded={false}>
-        <div className="h-20 bg-gradient-to-r from-accent/30 via-purple-500/25 to-sky-500/25" />
-        <div className="space-y-1.5 px-6 py-6 sm:px-8">
-          <h1 className="text-2xl font-bold">
+        <div className="h-16 bg-gradient-to-r from-accent/25 via-accent-2/15 to-surface-2" />
+        <div className="space-y-1 px-5 py-4 sm:px-6">
+          <h1 className="text-xl font-semibold">
             <span className="text-accent">[{clan.tag}]</span> {clan.name}
           </h1>
           <p className="text-sm text-muted">
@@ -70,18 +70,18 @@ export function ClanPage() {
       </Card>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-bold">Members</h2>
+        <h2 className="text-base font-semibold">Members</h2>
         {membersQuery.isPending ? (
           <LoadingState label="Loading members..." />
         ) : membersQuery.error ? (
           <ErrorState error={membersQuery.error} />
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="grid gap-2.5 sm:grid-cols-2">
             {members.map((member) => (
               <li key={member.id}>
                 <Link
                   to={`/u/${member.id}`}
-                  className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-2.5 hover:bg-surface-2"
+                  className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-2.5 transition-colors hover:bg-surface-2"
                 >
                   <Avatar
                     playerId={member.id}

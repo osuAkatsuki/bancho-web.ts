@@ -2,23 +2,39 @@
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
+    // sharper radius scale than tailwind's default — cards top out
+    // at 12px, controls at 8px, for a tighter, more modern feel
+    borderRadius: {
+      none: "0",
+      sm: "0.125rem",
+      DEFAULT: "0.25rem",
+      md: "0.375rem",
+      lg: "0.5rem",
+      xl: "0.625rem",
+      "2xl": "0.75rem",
+      "3xl": "1rem",
+      full: "9999px",
+    },
     extend: {
       colors: {
-        // dark plum palette, in the spirit of osu! clients
-        base: "#17131d",
-        surface: "#221c2b",
-        "surface-2": "#2c2438",
-        "surface-3": "#372d46",
-        line: "#3d3450",
-        muted: "#a99cbd",
+        // near-black neutral dark palette with a crimson accent
+        canvas: "#0d0e12",
+        surface: "#15161c",
+        "surface-2": "#1c1e26",
+        "surface-3": "#252833",
+        line: "#282b37",
+        muted: "#9099ad",
         accent: {
-          DEFAULT: "#ff66aa",
-          hover: "#ff85bb",
-          soft: "#ff66aa26",
+          DEFAULT: "#e5484d",
+          hover: "#f2555a",
+          soft: "#e5484d26",
+          // secondary hue, used sparingly in gradients
+          2: "#6e56cf",
         },
       },
       fontFamily: {
         sans: [
+          "Inter Variable",
           "Inter",
           "ui-sans-serif",
           "system-ui",

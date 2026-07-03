@@ -6,10 +6,10 @@ import "../src/index.css";
 const preview: Preview = {
   parameters: {
     backgrounds: {
-      default: "base",
+      default: "canvas",
       values: [
-        { name: "base", value: "#17131d" },
-        { name: "surface", value: "#221c2b" },
+        { name: "canvas", value: "#0d0e12" },
+        { name: "surface", value: "#15161c" },
       ],
     },
     controls: {

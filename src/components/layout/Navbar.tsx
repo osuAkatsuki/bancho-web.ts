@@ -13,10 +13,10 @@ const NAV_LINKS = [
 export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-6 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2.5">
-          <svg viewBox="0 0 64 64" className="h-7 w-7" aria-hidden>
-            <circle cx="32" cy="32" r="30" fill="#ff66aa" />
+          <svg viewBox="0 0 64 64" className="h-6 w-6" aria-hidden>
+            <circle cx="32" cy="32" r="30" fill="#e5484d" />
             <circle
               cx="32"
               cy="32"
@@ -27,7 +27,7 @@ export function Navbar() {
             />
             <circle cx="32" cy="32" r="8" fill="#fff" />
           </svg>
-          <span className="text-lg font-bold tracking-tight">
+          <span className="text-[15px] font-semibold tracking-tight">
             {env.appName}
           </span>
         </Link>
@@ -40,8 +40,8 @@ export function Navbar() {
               className={({ isActive }) =>
                 `rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-accent-soft text-accent"
-                    : "text-muted hover:bg-surface-2 hover:text-slate-100"
+                    ? "bg-surface-2 text-slate-100"
+                    : "text-muted hover:text-slate-100"
                 }`
               }
             >

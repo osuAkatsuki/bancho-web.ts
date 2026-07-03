@@ -36,7 +36,7 @@ export function PillTabs<T extends string | number>({
           type="button"
           disabled={tab.disabled}
           onClick={() => onChange(tab.value)}
-          className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+          className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors ${
             grow ? "flex-1" : ""
           } ${
             value === tab.value

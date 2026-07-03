@@ -18,14 +18,14 @@ export function HomePage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* hero */}
-      <section className="relative overflow-hidden rounded-2xl border border-line bg-surface px-6 py-16 text-center sm:px-12">
+      <section className="relative overflow-hidden rounded-2xl border border-line bg-surface px-6 py-14 text-center sm:px-12">
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-32 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-accent/25 blur-3xl"
+          className="pointer-events-none absolute -top-32 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-accent/20 blur-3xl"
         />
-        <h1 className="relative text-4xl font-extrabold tracking-tight sm:text-5xl">
+        <h1 className="relative text-4xl font-semibold tracking-tight sm:text-[2.75rem]">
           Welcome to <span className="text-accent">{env.appName}</span>
         </h1>
         <p className="relative mx-auto mt-4 max-w-xl text-muted">
@@ -50,14 +50,14 @@ export function HomePage() {
 
         <div className="relative mt-10 flex items-center justify-center gap-8 text-sm">
           <div>
-            <p className="text-2xl font-bold text-accent">
+            <p className="text-xl font-semibold text-accent">
               {stats ? formatNumber(stats.online_players) : "—"}
             </p>
             <p className="text-muted">players online</p>
           </div>
           <div className="h-10 w-px bg-line" />
           <div>
-            <p className="text-2xl font-bold">
+            <p className="text-xl font-semibold">
               {stats ? formatNumber(stats.total_players) : "—"}
             </p>
             <p className="text-muted">registered players</p>
@@ -66,7 +66,7 @@ export function HomePage() {
       </section>
 
       {/* how to connect */}
-      <section id="how-to-connect" className="grid gap-4 sm:grid-cols-3">
+      <section id="how-to-connect" className="grid gap-3 sm:grid-cols-3">
         <Card>
           <p className="text-sm font-semibold text-accent">Step 1</p>
           <h2 className="mt-1 font-bold">Install osu!</h2>
@@ -90,7 +90,7 @@ export function HomePage() {
           <p className="mt-2 text-sm text-muted">
             Add the devserver flag to your osu! shortcut's target:
           </p>
-          <code className="mt-3 block overflow-x-auto rounded-lg bg-base px-3 py-2 text-xs text-slate-200">
+          <code className="mt-3 block overflow-x-auto rounded-lg bg-canvas px-3 py-2 text-xs text-slate-200">
             osu!.exe -devserver {env.banchoDomain}
           </code>
         </Card>

@@ -16,7 +16,7 @@ export function Card({ children, padded = true, className = "" }: CardProps) {
   return (
     <div
       className={`rounded-2xl border border-line bg-surface ${
-        padded ? "px-6 py-5" : "overflow-hidden"
+        padded ? "px-5 py-4" : "overflow-hidden"
       } ${className}`}
     >
       {children}

@@ -7,8 +7,8 @@ export function NotFoundPage() {
 
   return (
     <div className="py-24 text-center">
-      <p className="text-6xl font-extrabold text-accent">404</p>
-      <h1 className="mt-4 text-xl font-bold">Page not found</h1>
+      <p className="text-6xl font-semibold text-accent">404</p>
+      <h1 className="mt-4 text-xl font-semibold">Page not found</h1>
       <p className="mt-2 text-sm text-muted">
         The page you're looking for doesn't exist or has been moved.
       </p>

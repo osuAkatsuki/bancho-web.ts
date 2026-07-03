@@ -58,7 +58,7 @@ export function BeatmapPage() {
   const statusDisplay = rankedStatusDisplay(beatmap!.status);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* map header */}
       <Card padded={false}>
         <div className="relative h-44">
@@ -78,9 +78,9 @@ export function BeatmapPage() {
           </span>
         </div>
 
-        <div className="space-y-4 px-6 pb-6 sm:px-8">
+        <div className="space-y-4 px-5 pb-5 sm:px-6">
           <div className="-mt-10 relative">
-            <h1 className="text-2xl font-bold drop-shadow">
+            <h1 className="text-xl font-semibold drop-shadow">
               {beatmap!.artist} - {beatmap!.title}
             </h1>
             <p className="mt-1 text-sm text-muted">
@@ -178,16 +178,16 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
       <table className="w-full min-w-[720px] text-sm">
         <thead>
           <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-muted">
-            <th className="px-4 py-3 text-right">Rank</th>
-            <th className="px-4 py-3">Grade</th>
-            <th className="px-4 py-3">Player</th>
-            <th className="px-4 py-3 text-right">
+            <th className="px-4 py-2.5 text-right">Rank</th>
+            <th className="px-4 py-2.5">Grade</th>
+            <th className="px-4 py-2.5">Player</th>
+            <th className="px-4 py-2.5 text-right">
               {showsPerformanceFirst ? "Performance" : "Score"}
             </th>
-            <th className="px-4 py-3 text-right">Accuracy</th>
-            <th className="px-4 py-3 text-right">Combo</th>
-            <th className="px-4 py-3">Mods</th>
-            <th className="px-4 py-3 text-right">
+            <th className="px-4 py-2.5 text-right">Accuracy</th>
+            <th className="px-4 py-2.5 text-right">Combo</th>
+            <th className="px-4 py-2.5">Mods</th>
+            <th className="px-4 py-2.5 text-right">
               {showsPerformanceFirst ? "Score" : "Performance"}
             </th>
           </tr>
@@ -198,13 +198,13 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
               key={`${score.player?.id}-${score.play_time}`}
               className="border-b border-line/50 last:border-b-0 hover:bg-surface-2"
             >
-              <td className="px-4 py-2.5 text-right font-semibold text-muted">
+              <td className="px-4 py-2 text-right font-semibold text-muted">
                 #{index + 1}
               </td>
-              <td className="px-4 py-2.5">
+              <td className="px-4 py-2">
                 <GradeBadge grade={score.grade} />
               </td>
-              <td className="px-4 py-2.5">
+              <td className="px-4 py-2">
                 {score.player ? (
                   <div className="flex items-center gap-2.5">
                     <Flag countryCode={score.player.country} />
@@ -224,15 +224,15 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
                   <span className="text-muted">Unknown player</span>
                 )}
               </td>
-              <td className="px-4 py-2.5 text-right font-semibold text-accent">
+              <td className="px-4 py-2 text-right font-semibold text-accent">
                 {showsPerformanceFirst
                   ? formatPerformance(score.pp)
                   : formatNumber(score.score)}
               </td>
-              <td className="px-4 py-2.5 text-right text-muted">
+              <td className="px-4 py-2 text-right text-muted">
                 {formatAccuracy(score.acc)}
               </td>
-              <td className="px-4 py-2.5 text-right text-muted">
+              <td className="px-4 py-2 text-right text-muted">
                 {formatNumber(score.max_combo)}x
                 {score.perfect && (
                   <span className="ml-1 text-accent" title="Full combo">
@@ -240,10 +240,10 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
                   </span>
                 )}
               </td>
-              <td className="px-4 py-2.5">
+              <td className="px-4 py-2">
                 <ModBadges mods={score.mods} />
               </td>
-              <td className="px-4 py-2.5 text-right text-muted">
+              <td className="px-4 py-2 text-right text-muted">
                 {showsPerformanceFirst
                   ? formatNumber(score.score)
                   : formatPerformance(score.pp)}

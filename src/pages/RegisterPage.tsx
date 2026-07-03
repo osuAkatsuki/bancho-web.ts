@@ -62,14 +62,14 @@ export function RegisterPage() {
 
   return (
     <div className="mx-auto max-w-sm py-8">
-      <h1 className="text-center text-2xl font-bold">Create an account</h1>
+      <h1 className="text-center text-xl font-semibold tracking-tight">Create an account</h1>
       <p className="mt-1 text-center text-sm text-muted">
         One account for the website and the game client.
       </p>
 
       <form
         onSubmit={onSubmit}
-        className="mt-8 space-y-4 rounded-2xl border border-line bg-surface p-6"
+        className="mt-6 space-y-4 rounded-2xl border border-line bg-surface p-5"
       >
         {error && (
           <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">

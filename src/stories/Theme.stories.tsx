@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 /**
- * The brand theme: a dark plum palette with an osu!-pink accent.
- * Tokens are defined in `tailwind.config.js` and used via utility
- * classes; this page documents them for reference.
+ * The brand theme: a near-black neutral palette with a crimson accent
+ * (and a violet secondary used sparingly in gradients). Tokens are
+ * defined in `tailwind.config.js` and used via utility classes; this
+ * page documents them for reference.
  */
 const COLORS = [
-  { name: "base", className: "bg-base", usage: "page background" },
+  { name: "canvas", className: "bg-canvas", usage: "page background" },
   { name: "surface", className: "bg-surface", usage: "cards, navbar, controls" },
   { name: "surface-2", className: "bg-surface-2", usage: "inputs, hover states, nested surfaces" },
   { name: "surface-3", className: "bg-surface-3", usage: "active states, placeholders" },
@@ -14,14 +15,15 @@ const COLORS = [
   { name: "muted", className: "bg-muted", usage: "secondary text" },
   { name: "accent", className: "bg-accent", usage: "brand, links, emphasis, primary buttons" },
   { name: "accent-hover", className: "bg-accent-hover", usage: "accent hover states" },
+  { name: "accent-2", className: "bg-accent-2", usage: "secondary hue, gradients only" },
 ];
 
 const SPACING = [
   { token: "gap-2 / p-2 (8px)", usage: "tight inline groups (badges, icons)" },
   { token: "gap-3 / p-3 (12px)", usage: "row internals, compact controls" },
   { token: "gap-4 / p-4 (16px)", usage: "between related items in a section" },
-  { token: "px-6 py-5 (24/20px)", usage: "standard card padding (Card default)" },
-  { token: "space-y-8 (32px)", usage: "between page sections" },
+  { token: "px-5 py-4 (20/16px)", usage: "standard card padding (Card default)" },
+  { token: "space-y-6 (24px)", usage: "between page sections" },
 ];
 
 function ThemeShowcase() {
@@ -47,8 +49,8 @@ function ThemeShowcase() {
       <section>
         <h2 className="mb-4 text-lg font-bold">Type scale</h2>
         <div className="space-y-3 rounded-2xl border border-line bg-surface px-6 py-5">
-          <p className="text-2xl font-bold tracking-tight">Page title (2xl bold)</p>
-          <p className="text-lg font-bold">Section heading (lg bold)</p>
+          <p className="text-xl font-semibold tracking-tight">Page title (xl semibold)</p>
+          <p className="text-base font-semibold">Section heading (base semibold)</p>
           <p className="text-sm">Body text (sm)</p>
           <p className="text-sm text-muted">Secondary text (sm muted)</p>
           <p className="text-xs uppercase tracking-wide text-muted">
@@ -76,13 +78,13 @@ function ThemeShowcase() {
         <h2 className="mb-4 text-lg font-bold">Radii</h2>
         <div className="flex gap-4">
           <div className="rounded-lg border border-line bg-surface px-4 py-3 text-sm">
-            rounded-lg — buttons, inputs
+            rounded-lg (8px) — buttons, inputs
           </div>
           <div className="rounded-xl border border-line bg-surface px-4 py-3 text-sm">
-            rounded-xl — rows, pills
+            rounded-xl (10px) — rows, pills
           </div>
           <div className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm">
-            rounded-2xl — cards
+            rounded-2xl (12px) — cards
           </div>
         </div>
       </section>

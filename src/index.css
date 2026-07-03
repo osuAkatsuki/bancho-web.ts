@@ -1,10 +1,12 @@
+@import "@fontsource-variable/inter";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    @apply bg-base text-slate-100 antialiased;
+    @apply bg-canvas font-sans text-slate-100 antialiased;
     /* reserve scrollbar space so navigating between short & tall
        pages doesn't shift the layout horizontally */
     scrollbar-gutter: stable;
@@ -12,5 +14,9 @@
 
   body {
     @apply min-h-screen;
+  }
+
+  ::selection {
+    @apply bg-accent/30;
   }
 }

@@ -24,7 +24,7 @@ export function ClansPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Clans"
         description="Player-run clans on the server, created and joined in-game."
@@ -44,7 +44,7 @@ export function ClansPage() {
                 <li key={clan.id}>
                   <Link
                     to={`/clan/${clan.id}`}
-                    className="flex items-center gap-4 px-6 py-3.5 hover:bg-surface-2"
+                    className="flex items-center gap-4 px-5 py-3 transition-colors hover:bg-surface-2"
                   >
                     <span className="w-20 shrink-0 font-bold text-accent">
                       [{clan.tag}]
