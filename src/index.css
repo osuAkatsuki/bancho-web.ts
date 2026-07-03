@@ -7,9 +7,36 @@
 @layer base {
   html {
     @apply bg-canvas font-sans text-slate-100 antialiased;
-    /* reserve scrollbar space so navigating between short & tall
-       pages doesn't shift the layout horizontally */
-    scrollbar-gutter: stable;
+    /* reserve scrollbar space on both edges so navigating between
+       short & tall pages doesn't shift the layout, and the reserved
+       strip reads as symmetric framing rather than a stray gap */
+    scrollbar-gutter: stable both-edges;
+    /* firefox */
+    scrollbar-width: thin;
+    scrollbar-color: theme("colors.surface-3") transparent;
+  }
+
+  /* slim themed scrollbar so the track blends into the page
+     (also forces classic scrollbars, keeping the gutters above
+     consistent for macOS overlay-scrollbar users) */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-color: theme("colors.surface-3");
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: theme("colors.line");
   }
 
   body {
