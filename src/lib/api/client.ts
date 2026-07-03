@@ -3,6 +3,7 @@ import type {
   Beatmap,
   Clan,
   LeaderboardEntry,
+  MapRating,
   MapScore,
   MostPlayedMap,
   Player,
@@ -76,6 +77,27 @@ export const api = {
   fetchBeatmap: (mapId: number) => apiGet<Beatmap>(`/v2/maps/${mapId}`),
 
   fetchScore: (scoreId: number) => apiGet<ScoreDetail>(`/v2/scores/${scoreId}`),
+
+  fetchBeatmapRating: (mapId: number) =>
+    apiGet<MapRating>(`/v2/maps/${mapId}/rating`),
+
+  fetchFriends: (playerId: number) =>
+    apiGet<Player[]>(`/v2/players/${playerId}/friends`),
+
+  addFriend: (playerId: number, targetId: number) =>
+    apiPut<null>(`/v2/players/${playerId}/friends/${targetId}`, undefined),
+
+  removeFriend: (playerId: number, targetId: number) =>
+    apiDelete<null>(`/v2/players/${playerId}/friends/${targetId}`),
+
+  fetchFavourites: (playerId: number) =>
+    apiGet<number[]>(`/v2/players/${playerId}/favourites`),
+
+  addFavourite: (playerId: number, setId: number) =>
+    apiPut<null>(`/v2/players/${playerId}/favourites/${setId}`, undefined),
+
+  removeFavourite: (playerId: number, setId: number) =>
+    apiDelete<null>(`/v2/players/${playerId}/favourites/${setId}`),
 
   fetchBeatmapScores: (mapId: number, options: { mode: number; limit?: number }) =>
     apiGet<MapScore[]>(`/v2/maps/${mapId}/scores`, {

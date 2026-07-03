@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import { FavouriteButton } from "@/components/FavouriteButton";
 import { Flag } from "@/components/Flag";
 import { GradeBadge } from "@/components/GradeBadge";
 import { ModBadges } from "@/components/ModBadges";
@@ -32,6 +33,14 @@ export function BeatmapPage() {
   });
 
   const beatmap = beatmapQuery.data;
+
+  const ratingQuery = useQuery({
+    queryKey: ["beatmap-rating", mapId],
+    queryFn: () => api.fetchBeatmapRating(mapId),
+    enabled: beatmapQuery.isSuccess,
+    select: (envelope) => envelope.data,
+  });
+  const rating = ratingQuery.data;
 
   // std maps are playable in every mode; mode-specific maps are not
   const [modeId, setModeId] = useState(0);
@@ -106,12 +115,18 @@ export function BeatmapPage() {
             <MapStat label="OD" value={beatmap!.od.toFixed(1)} />
             <MapStat label="HP" value={beatmap!.hp.toFixed(1)} />
             <span className="ml-auto text-muted">
+              {rating && rating.count > 0 && (
+                <span title={`${formatNumber(rating.count)} player ratings`}>
+                  rated {rating.average!.toFixed(2)} / 10 ·{" "}
+                </span>
+              )}
               {formatNumber(beatmap!.plays)} plays ·{" "}
               {formatNumber(beatmap!.passes)} passes
             </span>
           </div>
 
           <div className="flex gap-2">
+            <FavouriteButton setId={beatmap!.set_id} />
             <a
               href={`osu://dl/${beatmap!.set_id}`}
               className="rounded-lg bg-accent px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"

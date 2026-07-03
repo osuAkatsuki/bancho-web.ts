@@ -213,3 +213,8 @@ export interface Clan {
   created_at: string;
 }
 
+
+export interface MapRating {
+  average: number | null;
+  count: number;
+}
