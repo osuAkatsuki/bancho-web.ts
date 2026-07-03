@@ -1,0 +1,114 @@
+import { useQuery } from "@tanstack/react-query";
+import { Link, useParams } from "react-router-dom";
+
+import { Avatar } from "@/components/Avatar";
+import { Flag } from "@/components/Flag";
+import { ErrorState, LoadingState } from "@/components/states";
+import { api } from "@/lib/api/client";
+import { ApiError } from "@/lib/api/http";
+import { formatDate } from "@/lib/format";
+import { usePageTitle } from "@/lib/usePageTitle";
+
+// clan_priv values: 1 = member, 2 = officer, 3 = owner
+const CLAN_ROLES: Record<number, string> = {
+  3: "Owner",
+  2: "Officer",
+  1: "Member",
+};
+
+export function ClanPage() {
+  const params = useParams();
+  const clanId = Number(params.clanId);
+
+  const clanQuery = useQuery({
+    queryKey: ["clan", clanId],
+    queryFn: () => api.fetchClan(clanId),
+    enabled: Number.isInteger(clanId) && clanId > 0,
+    select: (envelope) => envelope.data,
+  });
+
+  const membersQuery = useQuery({
+    queryKey: ["clan-members", clanId],
+    queryFn: () => api.fetchClanMembers(clanId),
+    enabled: clanQuery.isSuccess,
+    select: (envelope) => envelope.data,
+  });
+
+  usePageTitle(
+    clanQuery.data ? `[${clanQuery.data.tag}] ${clanQuery.data.name}` : undefined,
+  );
+
+  if (!Number.isInteger(clanId) || clanId <= 0) {
+    return <ErrorState error={new ApiError("Invalid clan id.", 400)} />;
+  }
+  if (clanQuery.isPending) {
+    return <LoadingState label="Loading clan..." />;
+  }
+  if (clanQuery.error) {
+    return <ErrorState error={clanQuery.error} />;
+  }
+
+  const clan = clanQuery.data;
+  const members = [...(membersQuery.data ?? [])].sort(
+    (a, b) => b.clan_priv - a.clan_priv || a.name.localeCompare(b.name),
+  );
+
+  return (
+    <div className="space-y-6">
+      <section className="overflow-hidden rounded-2xl border border-line bg-surface">
+        <div className="h-20 bg-gradient-to-r from-accent/30 via-purple-500/25 to-sky-500/25" />
+        <div className="px-6 pb-5">
+          <div className="-mt-6 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-bold">
+                <span className="text-accent">[{clan.tag}]</span> {clan.name}
+              </h1>
+              <p className="mt-1 text-sm text-muted">
+                Founded {formatDate(clan.created_at)} ·{" "}
+                {members.length === 1 ? "1 member" : `${members.length} members`}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-bold">Members</h2>
+        {membersQuery.isPending ? (
+          <LoadingState label="Loading members..." />
+        ) : membersQuery.error ? (
+          <ErrorState error={membersQuery.error} />
+        ) : (
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {members.map((member) => (
+              <li key={member.id}>
+                <Link
+                  to={`/u/${member.id}`}
+                  className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-2.5 hover:bg-surface-2"
+                >
+                  <Avatar
+                    playerId={member.id}
+                    className="h-10 w-10 rounded-lg bg-surface-2 object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="flex items-center gap-2 truncate font-medium">
+                      <Flag countryCode={member.country} />
+                      {member.name}
+                    </p>
+                  </div>
+                  <span
+                    className={`text-xs font-semibold ${
+                      member.clan_priv === 3 ? "text-accent" : "text-muted"
+                    }`}
+                  >
+                    {CLAN_ROLES[member.clan_priv] ?? "Member"}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}

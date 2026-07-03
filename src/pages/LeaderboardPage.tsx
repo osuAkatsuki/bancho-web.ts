@@ -1,20 +1,54 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 
+import { Avatar } from "@/components/Avatar";
 import { Flag } from "@/components/Flag";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState, ErrorState, LoadingState } from "@/components/states";
-import { api } from "@/lib/api/client";
+import { api, type LeaderboardSort } from "@/lib/api/client";
+import type { LeaderboardEntry } from "@/lib/api/types";
+import { COUNTRIES } from "@/lib/countries";
 import { isValidModeId, modeName } from "@/lib/gamemodes";
 import {
   formatAccuracy,
   formatNumber,
   formatPerformance,
+  formatPlaytime,
 } from "@/lib/format";
 import { usePageTitle } from "@/lib/usePageTitle";
 
 const PAGE_SIZE = 50;
+
+const SORTS: { sort: LeaderboardSort; label: string }[] = [
+  { sort: "pp", label: "Performance" },
+  { sort: "rscore", label: "Ranked score" },
+  { sort: "acc", label: "Accuracy" },
+  { sort: "plays", label: "Playcount" },
+];
+
+const RANK_COLORS: Record<number, string> = {
+  1: "text-yellow-300",
+  2: "text-slate-300",
+  3: "text-amber-600",
+};
+
+function sortValue(entry: LeaderboardEntry, sort: LeaderboardSort): string {
+  switch (sort) {
+    case "rscore":
+      return formatNumber(entry.rscore);
+    case "tscore":
+      return formatNumber(entry.tscore);
+    case "acc":
+      return formatAccuracy(entry.acc);
+    case "plays":
+      return formatNumber(entry.plays);
+    case "playtime":
+      return formatPlaytime(entry.playtime);
+    default:
+      return formatPerformance(entry.pp);
+  }
+}
 
 export function LeaderboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,21 +57,45 @@ export function LeaderboardPage() {
   const modeId = isValidModeId(modeParam) ? modeParam : 0;
   const pageParam = Number(searchParams.get("page") ?? "1");
   const page = Number.isInteger(pageParam) && pageParam >= 1 ? pageParam : 1;
+  const sortParam = searchParams.get("sort") as LeaderboardSort | null;
+  const sort = SORTS.some((entry) => entry.sort === sortParam)
+    ? (sortParam as LeaderboardSort)
+    : "pp";
+  const country = searchParams.get("country") ?? "";
 
   usePageTitle(`${modeName(modeId)} Leaderboard`);
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["leaderboard", modeId, page],
+    queryKey: ["leaderboard", modeId, page, sort, country],
     queryFn: () =>
-      api.fetchLeaderboard(modeId, { sort: "pp", page, pageSize: PAGE_SIZE }),
+      api.fetchLeaderboard(modeId, {
+        sort,
+        country: country || undefined,
+        page,
+        pageSize: PAGE_SIZE,
+      }),
     select: (envelope) => envelope.data,
   });
 
-  function updateParams(next: { mode?: number; page?: number }) {
+  function updateParams(next: {
+    mode?: number;
+    page?: number;
+    sort?: LeaderboardSort;
+    country?: string;
+  }) {
     setSearchParams((params) => {
       if (next.mode !== undefined) {
         params.set("mode", String(next.mode));
-        params.delete("page"); // mode change resets pagination
+        params.delete("page");
+      }
+      if (next.sort !== undefined) {
+        params.set("sort", next.sort);
+        params.delete("page");
+      }
+      if (next.country !== undefined) {
+        if (next.country) params.set("country", next.country);
+        else params.delete("country");
+        params.delete("page");
       }
       if (next.page !== undefined) {
         params.set("page", String(next.page));
@@ -51,7 +109,7 @@ export function LeaderboardPage() {
       <div>
         <h1 className="text-2xl font-bold">Leaderboard</h1>
         <p className="mt-1 text-sm text-muted">
-          The top players on the server, ranked by performance points.
+          The top players on the server.
         </p>
       </div>
 
@@ -60,21 +118,55 @@ export function LeaderboardPage() {
         onChange={(mode) => updateParams({ mode })}
       />
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex rounded-xl bg-surface p-1">
+          {SORTS.map((entry) => (
+            <button
+              key={entry.sort}
+              type="button"
+              onClick={() => updateParams({ sort: entry.sort })}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                sort === entry.sort
+                  ? "bg-surface-3 text-slate-100"
+                  : "text-muted hover:text-slate-100"
+              }`}
+            >
+              {entry.label}
+            </button>
+          ))}
+        </div>
+
+        <select
+          value={country}
+          onChange={(event) => updateParams({ country: event.target.value })}
+          className="rounded-xl border border-line bg-surface px-3 py-2 text-sm focus:border-accent focus:outline-none"
+        >
+          <option value="">All countries</option>
+          {COUNTRIES.map((entry) => (
+            <option key={entry.code} value={entry.code}>
+              {entry.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {isPending ? (
         <LoadingState label="Loading leaderboard..." />
       ) : error ? (
         <ErrorState error={error} />
       ) : data.length === 0 ? (
-        <EmptyState label="No ranked players for this mode yet." />
+        <EmptyState label="No ranked players found." />
       ) : (
         <>
           <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
-            <table className="w-full min-w-[640px] text-sm">
+            <table className="w-full min-w-[680px] text-sm">
               <thead>
                 <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-muted">
                   <th className="px-4 py-3 text-right">Rank</th>
                   <th className="px-4 py-3">Player</th>
-                  <th className="px-4 py-3 text-right">Performance</th>
+                  <th className="px-4 py-3 text-right">
+                    {SORTS.find((entry) => entry.sort === sort)?.label}
+                  </th>
                   <th className="px-4 py-3 text-right">Accuracy</th>
                   <th className="px-4 py-3 text-right">Playcount</th>
                   <th className="hidden px-4 py-3 text-right sm:table-cell">
@@ -88,35 +180,43 @@ export function LeaderboardPage() {
                     key={entry.player_id}
                     className="border-b border-line/50 last:border-b-0 hover:bg-surface-2"
                   >
-                    <td className="px-4 py-2.5 text-right font-semibold text-muted">
+                    <td
+                      className={`px-4 py-2 text-right font-bold ${
+                        RANK_COLORS[entry.rank] ?? "text-muted"
+                      }`}
+                    >
                       #{entry.rank}
                     </td>
-                    <td className="px-4 py-2.5">
-                      <div className="flex items-center gap-2.5">
+                    <td className="px-4 py-2">
+                      <Link
+                        to={`/u/${entry.player_id}`}
+                        className="group flex items-center gap-2.5"
+                      >
+                        <Avatar
+                          playerId={entry.player_id}
+                          className="h-7 w-7 rounded-md bg-surface-3 object-cover"
+                        />
                         <Flag countryCode={entry.country} />
                         {entry.clan_tag && (
                           <span className="text-xs font-semibold text-accent">
                             [{entry.clan_tag}]
                           </span>
                         )}
-                        <Link
-                          to={`/u/${entry.player_id}`}
-                          className="font-medium hover:text-accent"
-                        >
+                        <span className="font-medium group-hover:text-accent">
                           {entry.name}
-                        </Link>
-                      </div>
+                        </span>
+                      </Link>
                     </td>
-                    <td className="px-4 py-2.5 text-right font-semibold text-accent">
-                      {formatPerformance(entry.pp)}
+                    <td className="px-4 py-2 text-right font-semibold text-accent">
+                      {sortValue(entry, sort)}
                     </td>
-                    <td className="px-4 py-2.5 text-right text-muted">
+                    <td className="px-4 py-2 text-right text-muted">
                       {formatAccuracy(entry.acc)}
                     </td>
-                    <td className="px-4 py-2.5 text-right text-muted">
+                    <td className="px-4 py-2 text-right text-muted">
                       {formatNumber(entry.plays)}
                     </td>
-                    <td className="hidden px-4 py-2.5 text-right text-xs text-muted sm:table-cell">
+                    <td className="hidden px-4 py-2 text-right text-xs text-muted sm:table-cell">
                       {formatNumber(entry.xh_count + entry.x_count)} /{" "}
                       {formatNumber(entry.sh_count + entry.s_count)} /{" "}
                       {formatNumber(entry.a_count)}

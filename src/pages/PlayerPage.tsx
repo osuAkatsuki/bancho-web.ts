@@ -3,10 +3,12 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { Avatar } from "@/components/Avatar";
+import { BeatmapThumb } from "@/components/BeatmapThumb";
 import { Flag } from "@/components/Flag";
 import { GradeBadge } from "@/components/GradeBadge";
 import { ModBadges } from "@/components/ModBadges";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
+import { UserpageContent } from "@/components/UserpageContent";
 import { EmptyState, ErrorState, LoadingState } from "@/components/states";
 import { api, type ScoreScope } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/http";
@@ -18,6 +20,8 @@ import {
   formatPlaytime,
   formatTimeAgo,
 } from "@/lib/format";
+import { getLevel } from "@/lib/level";
+import { describeStatus } from "@/lib/playerStatus";
 import { usePageTitle } from "@/lib/usePageTitle";
 
 type ScoresTab = ScoreScope | "most_played";
@@ -58,6 +62,14 @@ export function PlayerPage() {
     select: (envelope) => envelope.data,
   });
 
+  const clanId = playerQuery.data?.clan_id ?? 0;
+  const clanQuery = useQuery({
+    queryKey: ["clan", clanId],
+    queryFn: () => api.fetchClan(clanId),
+    enabled: clanId > 0,
+    select: (envelope) => envelope.data,
+  });
+
   usePageTitle(playerQuery.data?.name);
 
   if (!Number.isInteger(playerId) || playerId <= 0) {
@@ -90,6 +102,14 @@ export function PlayerPage() {
             <div className="pb-1">
               <div className="flex items-center gap-2.5">
                 <Flag countryCode={player.country} className="h-5 w-7" />
+                {clanQuery.data && (
+                  <Link
+                    to={`/clan/${clanQuery.data.id}`}
+                    className="text-lg font-bold text-accent hover:text-accent-hover"
+                  >
+                    [{clanQuery.data.tag}]
+                  </Link>
+                )}
                 <h1 className="text-2xl font-bold">{player.name}</h1>
                 <span
                   title={isOnline ? "Online" : "Offline"}
@@ -99,9 +119,16 @@ export function PlayerPage() {
                 />
               </div>
               <p className="mt-1 text-sm text-muted">
-                {isOnline
-                  ? "Currently online"
-                  : `Last seen ${formatTimeAgo(player.latest_activity)}`}
+                {isOnline && statusQuery.data ? (
+                  <span className="text-emerald-300">
+                    {describeStatus(
+                      statusQuery.data.action,
+                      statusQuery.data.info_text,
+                    )}
+                  </span>
+                ) : (
+                  `Last seen ${formatTimeAgo(player.latest_activity)}`
+                )}
                 {" · "}joined {formatTimeAgo(player.creation_time)}
               </p>
             </div>
@@ -142,6 +169,8 @@ export function PlayerPage() {
       {/* stats grid */}
       {stats ? (
         <>
+          <LevelBar totalScore={stats.tscore} />
+
           <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
               label="Performance"
@@ -178,6 +207,16 @@ export function PlayerPage() {
         <EmptyState label="No stats for this mode." />
       )}
 
+      {/* userpage */}
+      {player.userpage_content && (
+        <section className="rounded-2xl border border-line bg-surface px-6 py-5">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+            About me
+          </h2>
+          <UserpageContent content={player.userpage_content} />
+        </section>
+      )}
+
       {/* score listings */}
       <section className="space-y-4">
         <div className="flex rounded-xl bg-surface p-1">
@@ -204,6 +243,26 @@ export function PlayerPage() {
         )}
       </section>
     </div>
+  );
+}
+
+function LevelBar({ totalScore }: { totalScore: number }) {
+  const { level, progress } = getLevel(totalScore);
+
+  return (
+    <section className="flex items-center gap-4 rounded-2xl border border-line bg-surface px-6 py-4">
+      <span className="text-sm font-semibold text-muted">Level</span>
+      <span className="text-2xl font-extrabold text-accent">{level}</span>
+      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface-3">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-accent to-purple-400"
+          style={{ width: `${Math.round(progress * 100)}%` }}
+        />
+      </div>
+      <span className="text-sm font-medium text-muted">
+        {Math.floor(progress * 100)}%
+      </span>
+    </section>
   );
 }
 
@@ -279,10 +338,15 @@ function ScoreList({
 function ScoreRow({ score }: { score: PlayerScore }) {
   const beatmap = score.beatmap;
   return (
-    <li className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-2.5 hover:bg-surface-2">
+    <li className="flex items-center gap-3 overflow-hidden rounded-xl border border-line bg-surface pr-4 hover:bg-surface-2">
+      {beatmap ? (
+        <BeatmapThumb setId={beatmap.set_id} className="h-14 w-24 shrink-0" />
+      ) : (
+        <span className="block h-14 w-24 shrink-0 bg-surface-3" />
+      )}
       <GradeBadge grade={score.grade} />
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 py-2">
         {beatmap ? (
           <Link
             to={`/b/${beatmap.id}`}
@@ -343,8 +407,9 @@ function MostPlayedList({
 
 function MostPlayedRow({ map }: { map: MostPlayedMap }) {
   return (
-    <li className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-2.5 hover:bg-surface-2">
-      <div className="min-w-0 flex-1">
+    <li className="flex items-center gap-3 overflow-hidden rounded-xl border border-line bg-surface pr-4 hover:bg-surface-2">
+      <BeatmapThumb setId={map.set_id} className="h-14 w-24 shrink-0" />
+      <div className="min-w-0 flex-1 py-2">
         <Link
           to={`/b/${map.id}`}
           className="block truncate font-medium hover:text-accent"

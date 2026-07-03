@@ -1,6 +1,7 @@
-import { apiGet } from "@/lib/api/http";
+import { apiDelete, apiGet, apiPost } from "@/lib/api/http";
 import type {
   Beatmap,
+  Clan,
   LeaderboardEntry,
   MapScore,
   MostPlayedMap,
@@ -10,6 +11,7 @@ import type {
   PlayerStatus,
   SearchPlayer,
   ServerStats,
+  Session,
 } from "@/lib/api/types";
 
 export type LeaderboardSort =
@@ -78,4 +80,35 @@ export const api = {
       mode: options.mode,
       limit: options.limit,
     }),
+
+  fetchClans: (options: { page?: number; pageSize?: number } = {}) =>
+    apiGet<Clan[]>("/v2/clans", {
+      page: options.page,
+      page_size: options.pageSize,
+    }),
+
+  fetchClan: (clanId: number) => apiGet<Clan>(`/v2/clans/${clanId}`),
+
+  fetchClanMembers: (clanId: number) =>
+    apiGet<Player[]>("/v2/players", { clan_id: clanId, page_size: 100 }),
+
+  registerAccount: (args: {
+    username: string;
+    email: string;
+    password: string;
+    captchaToken: string | null;
+  }) =>
+    apiPost<Player>("/v2/accounts", {
+      username: args.username,
+      email: args.email,
+      password: args.password,
+      captcha_token: args.captchaToken,
+    }),
+
+  createSession: (args: { username: string; password: string }) =>
+    apiPost<Session>("/v2/sessions", args),
+
+  fetchCurrentSession: () => apiGet<Player>("/v2/sessions/current"),
+
+  deleteCurrentSession: () => apiDelete<null>("/v2/sessions/current"),
 };

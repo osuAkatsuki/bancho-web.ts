@@ -23,7 +23,13 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: banchoApiTarget,
           changeOrigin: false,
-          headers: { host: `api.${banchoDomain}` },
+          headers: {
+            host: `api.${banchoDomain}`,
+            // bancho.py resolves client ips from proxy headers
+            // (normally set by nginx in production)
+            "X-Real-IP": "127.0.0.1",
+            "X-Forwarded-For": "127.0.0.1",
+          },
           rewrite: (p) => p.replace(/^\/api/, ""),
         },
       },

@@ -8,13 +8,19 @@ bancho.py's **v2 api** — no database access, no server-side rendering.
 
 ## Features
 
+- **Registration & sign in** — website account creation (backed by bancho.py's
+  v2 accounts/sessions apis) with optional captcha (reCAPTCHA, hCaptcha or
+  Turnstile); important since bancho.py disables in-game registration by default
 - **Home** — server stats (online/registered players) & "how to connect" guide
-- **Leaderboards** — global pp rankings for every mode (vanilla/relax/autopilot),
-  with country flags, clan tags & pagination
-- **Player profiles** — per-mode stats with global/country ranks, grade counts,
-  best/recent scores (with embedded beatmap info) and most played maps
+- **Leaderboards** — per-mode rankings (vanilla/relax/autopilot) with
+  performance/score/accuracy/playcount sorts, country filtering, avatars,
+  clan tags & pagination
+- **Player profiles** — per-mode stats with global/country ranks, level bar,
+  grade counts, userpage, live "now playing" status, best/recent scores and
+  most played maps with beatmap thumbnails
 - **Beatmap pages** — map info with cover art, difficulty stats, and per-mode
   leaderboards with grades, mods & FC markers
+- **Clans** — clan listing & clan pages with member roles
 - **Player search** — debounced live search in the navbar
 
 ## Stack
@@ -86,6 +92,10 @@ server {
         rewrite ^/api/(.*)$ /$1 break;
         proxy_pass http://127.0.0.1:10000;
         proxy_set_header Host api.example.com;
+        # bancho.py resolves client ips from these headers
+        # (used for geolocation during account registration)
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 }
 ```

@@ -1,11 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
 
 import { PlayerSearch } from "@/components/PlayerSearch";
+import { UserMenu } from "@/components/layout/UserMenu";
 import { env } from "@/lib/env";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/leaderboard", label: "Leaderboard" },
+  { to: "/clans", label: "Clans" },
 ];
 
 export function Navbar() {
@@ -48,8 +50,11 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="ml-auto w-full max-w-xs">
-          <PlayerSearch />
+        <div className="ml-auto flex items-center gap-3">
+          <div className="w-full max-w-xs">
+            <PlayerSearch />
+          </div>
+          <UserMenu />
         </div>
       </div>
     </header>

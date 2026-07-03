@@ -198,3 +198,16 @@ export interface ServerStats {
   online_players: number;
   total_players: number;
 }
+
+export interface Clan {
+  id: number;
+  name: string;
+  tag: string;
+  owner: number;
+  created_at: string;
+}
+
+export interface Session {
+  token: string;
+  player_id: number;
+}
