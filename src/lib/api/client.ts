@@ -1,4 +1,4 @@
-import { apiDelete, apiGet, apiPost } from "@/lib/api/http";
+import { apiDelete, apiGet, apiPost, apiPut } from "@/lib/api/http";
 import type {
   Beatmap,
   Clan,
@@ -10,6 +10,7 @@ import type {
   PlayerStats,
   PlayerStatus,
   SearchPlayer,
+  ServerMeta,
   ServerStats,
 } from "@/lib/api/types";
 
@@ -25,6 +26,8 @@ export type ScoreScope = "best" | "recent";
 
 export const api = {
   fetchServerStats: () => apiGet<ServerStats>("/v2/server/stats"),
+
+  fetchServerMeta: () => apiGet<ServerMeta>("/v2/server/meta"),
 
   fetchLeaderboard: (
     mode: number,
@@ -110,4 +113,10 @@ export const api = {
   fetchCurrentSession: () => apiGet<Player>("/v2/sessions/current"),
 
   deleteCurrentSession: () => apiDelete<null>("/v2/sessions/current"),
+
+  uploadAvatar: (playerId: number, file: File) => {
+    const form = new FormData();
+    form.append("avatar_file", file);
+    return apiPut<null>(`/v2/players/${playerId}/avatar`, form);
+  },
 };

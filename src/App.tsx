@@ -10,6 +10,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PlayerPage } from "@/pages/PlayerPage";
 import { RegisterPage } from "@/pages/RegisterPage";
+import { SettingsPage } from "@/pages/SettingsPage";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/b/:mapId" element={<BeatmapPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

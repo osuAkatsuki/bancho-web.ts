@@ -68,6 +68,13 @@ export function UserMenu() {
           >
             My profile
           </Link>
+          <Link
+            to="/settings"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 text-sm hover:bg-surface-3"
+          >
+            Settings
+          </Link>
           <button
             type="button"
             onClick={async () => {

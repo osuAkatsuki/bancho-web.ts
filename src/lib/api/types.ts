@@ -199,6 +199,10 @@ export interface ServerStats {
   total_players: number;
 }
 
+export interface ServerMeta {
+  discord_invite: string | null;
+}
+
 export interface Clan {
   id: number;
   name: string;

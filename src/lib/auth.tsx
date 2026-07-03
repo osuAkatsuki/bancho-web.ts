@@ -35,6 +35,12 @@ interface AuthContextValue {
   player: Player | null;
   /** true while the persisted session is being restored on page load */
   isLoading: boolean;
+  /**
+   * bumped when the signed-in player uploads a new avatar, so cached
+   * copies of their old one get busted across the app
+   */
+  avatarVersion: number;
+  refreshAvatar: () => void;
   login: (username: string, password: string) => Promise<void>;
   register: (args: {
     username: string;
@@ -50,6 +56,11 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [player, setPlayer] = useState<Player | null>(null);
   const [isLoading, setIsLoading] = useState(() => hasSessionHint());
+  const [avatarVersion, setAvatarVersion] = useState(0);
+
+  const refreshAvatar = useCallback(() => {
+    setAvatarVersion((current) => current + 1);
+  }, []);
 
   // a 401 from any endpoint means the session is gone (it can be
   // revoked server-side at any time, and another request may discover
@@ -100,8 +111,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ player, isLoading, login, register, logout }),
-    [player, isLoading, login, register, logout],
+    () => ({
+      player,
+      isLoading,
+      avatarVersion,
+      refreshAvatar,
+      login,
+      register,
+      logout,
+    }),
+    [player, isLoading, avatarVersion, refreshAvatar, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

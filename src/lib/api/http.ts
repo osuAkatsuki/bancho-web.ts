@@ -27,7 +27,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
 }
 
 async function request<T>(
-  method: "GET" | "POST" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "DELETE",
   path: string,
   options: { params?: QueryParams; body?: unknown } = {},
 ): Promise<Envelope<T>> {
@@ -38,15 +38,21 @@ async function request<T>(
     }
   }
 
+  // FormData bodies set their own multipart content type (with boundary)
+  const isFormData = options.body instanceof FormData;
   const headers: Record<string, string> = { Accept: "application/json" };
-  if (options.body !== undefined) {
+  if (options.body !== undefined && !isFormData) {
     headers["Content-Type"] = "application/json";
   }
 
   const response = await fetch(url, {
     method,
     headers,
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    body: isFormData
+      ? (options.body as FormData)
+      : options.body !== undefined
+        ? JSON.stringify(options.body)
+        : undefined,
     // sessions are transported via an http-only cookie
     credentials: "include",
   });
@@ -92,6 +98,10 @@ export function apiGet<T>(
 
 export function apiPost<T>(path: string, body: unknown): Promise<Envelope<T>> {
   return request<T>("POST", path, { body });
+}
+
+export function apiPut<T>(path: string, body: unknown): Promise<Envelope<T>> {
+  return request<T>("PUT", path, { body });
 }
 
 export function apiDelete<T>(path: string): Promise<Envelope<T>> {
