@@ -34,12 +34,12 @@ export function HomePage() {
         </p>
 
         <div className="relative mt-8 flex items-center justify-center gap-3">
-          <a
-            href="#how-to-connect"
+          <Link
+            to="/register"
             className="rounded-xl bg-accent px-6 py-2.5 font-semibold text-white transition-colors hover:bg-accent-hover"
           >
             Get started
-          </a>
+          </Link>
           <Link
             to="/leaderboard"
             className="rounded-xl border border-line bg-surface-2 px-6 py-2.5 font-semibold transition-colors hover:bg-surface-3"
