@@ -9,7 +9,26 @@ import {
 } from "react";
 
 import { api } from "@/lib/api/client";
+import { setUnauthorizedHandler } from "@/lib/api/http";
 import type { Player } from "@/lib/api/types";
+
+// The session cookie is http-only, so js can't inspect it — this local
+// hint (set at login, cleared at logout) lets anonymous visitors skip
+// the who-am-i request entirely. It's never trusted for authentication;
+// it only decides whether asking the server is worthwhile.
+const HAS_SESSION_KEY = "bancho-web.has-session";
+
+function hasSessionHint(): boolean {
+  return localStorage.getItem(HAS_SESSION_KEY) === "1";
+}
+
+function setSessionHint(active: boolean): void {
+  if (active) {
+    localStorage.setItem(HAS_SESSION_KEY, "1");
+  } else {
+    localStorage.removeItem(HAS_SESSION_KEY);
+  }
+}
 
 interface AuthContextValue {
   /** the signed-in player, or null when logged out */
@@ -30,20 +49,34 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [player, setPlayer] = useState<Player | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => hasSessionHint());
 
-  // the session lives in an http-only cookie, so restoring it on page
-  // load is just asking the api who we are
+  // a 401 from any endpoint means the session is gone (it can be
+  // revoked server-side at any time, and another request may discover
+  // that before /sessions/current does) — drop the signed-in state
   useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setSessionHint(false);
+      setPlayer(null);
+    });
+    return () => setUnauthorizedHandler(null);
+  }, []);
+
+  // restore the session on page load, but only when a previous login
+  // suggests there's one to restore
+  useEffect(() => {
+    if (!hasSessionHint()) return;
+
     api
       .fetchCurrentSession()
       .then((envelope) => setPlayer(envelope.data))
-      .catch(() => setPlayer(null))
+      .catch(() => setPlayer(null)) // a 401 also clears the hint above
       .finally(() => setIsLoading(false));
   }, []);
 
   const login = useCallback(async (username: string, password: string) => {
     const session = await api.createSession({ username, password });
+    setSessionHint(true);
     setPlayer(session.data);
   }, []);
 
@@ -62,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     await api.deleteCurrentSession().catch(() => undefined);
+    setSessionHint(false);
     setPlayer(null);
   }, []);
 

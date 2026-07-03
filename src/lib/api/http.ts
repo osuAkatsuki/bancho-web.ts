@@ -17,6 +17,15 @@ export interface Envelope<T> {
 
 type QueryParams = Record<string, string | number | boolean | undefined>;
 
+// notified when any api response indicates the session is no longer
+// valid (revoked, expired, or never existed) — registered by the auth
+// provider, which drops the signed-in state in response
+let unauthorizedHandler: (() => void) | null = null;
+
+export function setUnauthorizedHandler(handler: (() => void) | null): void {
+  unauthorizedHandler = handler;
+}
+
 async function request<T>(
   method: "GET" | "POST" | "DELETE",
   path: string,
@@ -41,6 +50,15 @@ async function request<T>(
     // sessions are transported via an http-only cookie
     credentials: "include",
   });
+
+  // a 401 from the login endpoint means bad credentials, not a dead
+  // session; from anywhere else it means our session is gone
+  if (
+    response.status === 401 &&
+    !(method === "POST" && path === "/v2/sessions")
+  ) {
+    unauthorizedHandler?.();
+  }
 
   const body = (await response.json().catch(() => null)) as {
     status?: string;
