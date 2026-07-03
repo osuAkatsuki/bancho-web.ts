@@ -17,13 +17,6 @@ export interface Envelope<T> {
 
 type QueryParams = Record<string, string | number | boolean | undefined>;
 
-// bearer token for authenticated endpoints, managed by the auth provider
-let authToken: string | null = null;
-
-export function setAuthToken(token: string | null): void {
-  authToken = token;
-}
-
 async function request<T>(
   method: "GET" | "POST" | "DELETE",
   path: string,
@@ -40,14 +33,13 @@ async function request<T>(
   if (options.body !== undefined) {
     headers["Content-Type"] = "application/json";
   }
-  if (authToken !== null) {
-    headers.Authorization = `Bearer ${authToken}`;
-  }
 
   const response = await fetch(url, {
     method,
     headers,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    // sessions are transported via an http-only cookie
+    credentials: "include",
   });
 
   const body = (await response.json().catch(() => null)) as {

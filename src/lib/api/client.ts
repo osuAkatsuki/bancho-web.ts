@@ -11,7 +11,6 @@ import type {
   PlayerStatus,
   SearchPlayer,
   ServerStats,
-  Session,
 } from "@/lib/api/types";
 
 export type LeaderboardSort =
@@ -106,7 +105,7 @@ export const api = {
     }),
 
   createSession: (args: { username: string; password: string }) =>
-    apiPost<Session>("/v2/sessions", args),
+    apiPost<Player>("/v2/sessions", args),
 
   fetchCurrentSession: () => apiGet<Player>("/v2/sessions/current"),
 

@@ -207,7 +207,3 @@ export interface Clan {
   created_at: string;
 }
 
-export interface Session {
-  token: string;
-  player_id: number;
-}

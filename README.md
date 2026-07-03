@@ -63,12 +63,12 @@ npm run build-storybook  # static storybook build
 
 ## Design system
 
-The brand theme (dark plum + osu!-pink accent) lives in
-`tailwind.config.js` as Tailwind color tokens (`base`, `surface`,
-`surface-2/3`, `line`, `muted`, `accent`). Shared primitives in
-`src/components/ui/` keep spacing & shape consistent:
+The brand theme (near-black neutral palette + crimson accent) lives in
+`tailwind.config.js` as Tailwind color tokens (`canvas`, `surface`,
+`surface-2/3`, `line`, `muted`, `accent`, `accent-2`). Shared primitives
+in `src/components/ui/` keep spacing & shape consistent:
 
-- `Card` — the standard surface container (default `px-6 py-5` padding,
+- `Card` — the standard surface container (default `px-5 py-4` padding,
   or edge-to-edge for tables & media)
 - `PageHeader` — page title + description block
 - `PillTabs` — the segmented pill-tab control (mode switchers, sorts, tabs)
@@ -93,13 +93,29 @@ All `VITE_*` variables are baked in at build time (see `.env.example`):
 Build the static bundle and serve `dist/` from any web server. The SPA needs:
 
 1. **History fallback** — unknown paths must serve `index.html`
-2. **An api origin** — either set `VITE_API_BASE_URL=https://api.your.domain`
-   (requires CORS headers on that origin), or keep the default `/api` and
-   proxy it to bancho.py — no CORS needed since everything stays same-origin:
+2. **An api origin** — keep the default `/api` and proxy it to bancho.py
+   (recommended): sessions ride an http-only, `SameSite=Lax` cookie, which
+   Just Works when everything stays same-origin. (Splitting the api onto
+   another origin requires CORS with `Access-Control-Allow-Credentials` and
+   an explicit `Access-Control-Allow-Origin` — avoid unless you need it.)
 
 ```nginx
 server {
     server_name osu.example.com;
+
+    # ---- security headers ----
+    # csp: allowlist of what pages may load/execute; limits the blast
+    # radius of xss. roll out with Content-Security-Policy-Report-Only
+    # first if you've customized the frontend.
+    #
+    # if you use a captcha provider, add its sources:
+    #   turnstile:  script-src/frame-src https://challenges.cloudflare.com
+    #   recaptcha:  script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/
+    #               frame-src https://www.google.com/recaptcha/
+    #   hcaptcha:   script-src/frame-src https://js.hcaptcha.com https://*.hcaptcha.com
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://a.example.com https://assets.ppy.sh https://b.ppy.sh https://flagcdn.com; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
     location / {
         root /srv/bancho-web/dist;

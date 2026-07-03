@@ -9,10 +9,7 @@ import {
 } from "react";
 
 import { api } from "@/lib/api/client";
-import { setAuthToken } from "@/lib/api/http";
 import type { Player } from "@/lib/api/types";
-
-const TOKEN_STORAGE_KEY = "bancho-web.session-token";
 
 interface AuthContextValue {
   /** the signed-in player, or null when logged out */
@@ -31,40 +28,23 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function persistToken(token: string | null) {
-  setAuthToken(token);
-  if (token === null) {
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
-  } else {
-    localStorage.setItem(TOKEN_STORAGE_KEY, token);
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [player, setPlayer] = useState<Player | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // restore the persisted session on page load
+  // the session lives in an http-only cookie, so restoring it on page
+  // load is just asking the api who we are
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
-    if (token === null) {
-      setIsLoading(false);
-      return;
-    }
-
-    setAuthToken(token);
     api
       .fetchCurrentSession()
       .then((envelope) => setPlayer(envelope.data))
-      .catch(() => persistToken(null))
+      .catch(() => setPlayer(null))
       .finally(() => setIsLoading(false));
   }, []);
 
   const login = useCallback(async (username: string, password: string) => {
     const session = await api.createSession({ username, password });
-    persistToken(session.data.token);
-    const current = await api.fetchCurrentSession();
-    setPlayer(current.data);
+    setPlayer(session.data);
   }, []);
 
   const register = useCallback(
@@ -82,7 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     await api.deleteCurrentSession().catch(() => undefined);
-    persistToken(null);
     setPlayer(null);
   }, []);
 
