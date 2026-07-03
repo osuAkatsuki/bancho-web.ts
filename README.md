@@ -1,8 +1,8 @@
 # bancho-web
 
 A clean, modern web frontend for [bancho.py](https://github.com/osuAkatsuki/bancho.py),
-built with React + TypeScript. It's a read-only SPA driven entirely by
-bancho.py's **v2 api** — no database access, no server-side rendering.
+built with React + TypeScript. It's an SPA driven entirely by bancho.py's
+**v2 api** — no database access, no server-side rendering.
 
 ![](https://img.shields.io/badge/react-18-61dafb) ![](https://img.shields.io/badge/typescript-5-3178c6) ![](https://img.shields.io/badge/tailwindcss-3-38bdf8)
 
@@ -22,6 +22,8 @@ bancho.py's **v2 api** — no database access, no server-side rendering.
   leaderboards with grades, mods & FC markers
 - **Clans** — clan listing & clan pages with member roles
 - **Player search** — debounced live search in the navbar
+- **Settings** — avatar upload for signed-in players (requires bancho.py
+  with `PUT /v2/players/{id}/avatar`)
 
 ## Stack
 
@@ -105,9 +107,15 @@ Build the static bundle and serve `dist/` from any web server. The SPA needs:
 # creation; logins are limited to slow down credential stuffing.
 limit_req_zone $binary_remote_addr zone=bancho_registrations:10m rate=1r/m;
 limit_req_zone $binary_remote_addr zone=bancho_logins:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=bancho_avatar_uploads:10m rate=10r/m;
 
 server {
+    listen 443 ssl;
     server_name osu.example.com;
+
+    ssl_certificate     /path/to/fullchain.pem;
+    ssl_certificate_key /path/to/privkey.pem;
+    ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:@SECLEVEL=1";
 
     # bancho.py resolves client ips from these headers (used for
     # geolocation during registration & for rate limiting fairness)
@@ -117,15 +125,24 @@ server {
 
     # ---- security headers ----
     # csp: allowlist of what pages may load/execute; limits the blast
-    # radius of xss. roll out with Content-Security-Policy-Report-Only
-    # first if you've customized the frontend.
-    #
-    # if you use a captcha provider, add its sources:
-    #   turnstile:  script-src/frame-src https://challenges.cloudflare.com
-    #   recaptcha:  script-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/
-    #               frame-src https://www.google.com/recaptcha/
-    #   hcaptcha:   script-src/frame-src https://js.hcaptcha.com https://*.hcaptcha.com
+    # radius of xss. keep exactly ONE Content-Security-Policy line —
+    # the one matching your captcha provider — and replace
+    # a.example.com with your avatar host. roll out with
+    # Content-Security-Policy-Report-Only first if you've customized
+    # the frontend.
+
+    # no captcha:
     add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://a.example.com https://assets.ppy.sh https://b.ppy.sh https://flagcdn.com; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
+    # cloudflare turnstile:
+    #add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://a.example.com https://assets.ppy.sh https://b.ppy.sh https://flagcdn.com; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
+    # google recaptcha:
+    #add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; frame-src https://www.google.com/recaptcha/; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://a.example.com https://assets.ppy.sh https://b.ppy.sh https://flagcdn.com; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
+    # hcaptcha:
+    #add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://hcaptcha.com https://*.hcaptcha.com; frame-src https://hcaptcha.com https://*.hcaptcha.com; style-src 'self' 'unsafe-inline' https://hcaptcha.com https://*.hcaptcha.com; img-src 'self' data: https://a.example.com https://assets.ppy.sh https://b.ppy.sh https://flagcdn.com; connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
@@ -144,6 +161,15 @@ server {
     location = /api/v2/sessions {
         limit_req zone=bancho_logins burst=5 nodelay;
         limit_req_status 429;
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://127.0.0.1:10000;
+    }
+
+    # avatar uploads are up to 2MB (nginx's default body limit is 1MB)
+    location ~ ^/api/v2/players/\d+/avatar$ {
+        limit_req zone=bancho_avatar_uploads burst=5 nodelay;
+        limit_req_status 429;
+        client_max_body_size 4m;
         rewrite ^/api/(.*)$ /$1 break;
         proxy_pass http://127.0.0.1:10000;
     }
