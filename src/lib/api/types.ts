@@ -160,7 +160,13 @@ export interface ScorePlayer {
   clan_tag: string | null;
 }
 
+export interface ScoreDetail extends PlayerScore {
+  userid: number;
+  player: ScorePlayer;
+}
+
 export interface MapScore {
+  id: number;
   map_md5: string;
   score: number;
   pp: number;

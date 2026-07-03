@@ -9,6 +9,7 @@ import type {
   PlayerScore,
   PlayerStats,
   PlayerStatus,
+  ScoreDetail,
   SearchPlayer,
   ServerStats,
 } from "@/lib/api/types";
@@ -73,6 +74,8 @@ export const api = {
     apiGet<SearchPlayer[]>("/v2/players/search", { q: query }),
 
   fetchBeatmap: (mapId: number) => apiGet<Beatmap>(`/v2/maps/${mapId}`),
+
+  fetchScore: (scoreId: number) => apiGet<ScoreDetail>(`/v2/scores/${scoreId}`),
 
   fetchBeatmapScores: (mapId: number, options: { mode: number; limit?: number }) =>
     apiGet<MapScore[]>(`/v2/maps/${mapId}/scores`, {

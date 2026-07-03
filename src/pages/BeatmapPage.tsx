@@ -195,7 +195,7 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
         <tbody>
           {data.map((score, index) => (
             <tr
-              key={`${score.player?.id}-${score.play_time}`}
+              key={score.id}
               className="border-b border-line/50 last:border-b-0 hover:bg-surface-2"
             >
               <td className="px-4 py-2 text-right font-semibold text-muted">
@@ -224,10 +224,16 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
                   <span className="text-muted">Unknown player</span>
                 )}
               </td>
-              <td className="px-4 py-2 text-right font-semibold text-accent">
-                {showsPerformanceFirst
-                  ? formatPerformance(score.pp)
-                  : formatNumber(score.score)}
+              <td className="px-4 py-2 text-right font-semibold">
+                <Link
+                  to={`/s/${score.id}`}
+                  className="text-accent hover:text-accent-hover"
+                  title="View score details"
+                >
+                  {showsPerformanceFirst
+                    ? formatPerformance(score.pp)
+                    : formatNumber(score.score)}
+                </Link>
               </td>
               <td className="px-4 py-2 text-right text-muted">
                 {formatAccuracy(score.acc)}
