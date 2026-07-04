@@ -338,7 +338,14 @@ function ScoreList({
 function ScoreRow({ score }: { score: PlayerScore }) {
   const beatmap = score.beatmap;
   return (
-    <li className="flex items-center gap-3.5 overflow-hidden rounded-xl border border-line bg-surface pr-4 transition-colors hover:bg-surface-2">
+    // the whole row links to the score page via an overlay; inner links
+    // (the beatmap title) sit above it on the z axis
+    <li className="relative flex items-center gap-3.5 overflow-hidden rounded-xl border border-line bg-surface pr-4 transition-colors hover:bg-surface-2">
+      <Link
+        to={`/s/${score.id}`}
+        className="absolute inset-0"
+        aria-label="View score details"
+      />
       {beatmap ? (
         <BeatmapThumb setId={beatmap.set_id} className="h-12 w-[5.25rem] shrink-0" />
       ) : (
@@ -350,7 +357,7 @@ function ScoreRow({ score }: { score: PlayerScore }) {
         {beatmap ? (
           <Link
             to={`/b/${beatmap.id}`}
-            className="block truncate font-medium hover:text-accent"
+            className="relative z-10 block max-w-fit truncate font-medium hover:text-accent"
           >
             {beatmap.artist} - {beatmap.title}{" "}
             <span className="text-muted">[{beatmap.version}]</span>
@@ -366,18 +373,12 @@ function ScoreRow({ score }: { score: PlayerScore }) {
         </div>
       </div>
 
-      <Link
-        to={`/s/${score.id}`}
-        className="group block shrink-0 text-right"
-        title="View score details"
-      >
-        <p className="font-bold text-accent group-hover:text-accent-hover">
-          {formatPerformance(score.pp)}
-        </p>
+      <div className="shrink-0 text-right">
+        <p className="font-bold text-accent">{formatPerformance(score.pp)}</p>
         <p className="text-xs text-muted">
           {formatAccuracy(score.acc)} · {formatNumber(score.max_combo)}x
         </p>
-      </Link>
+      </div>
     </li>
   );
 }

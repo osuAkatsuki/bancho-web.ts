@@ -31,8 +31,14 @@ export function FriendButton({ playerId }: { playerId: number }) {
       queryClient.invalidateQueries({ queryKey: ["friends", me?.id] }),
   });
 
-  if (!enabled || !friendsQuery.isSuccess) {
+  if (!enabled) {
     return null;
+  }
+
+  // fixed footprint: the loading placeholder and both toggle states are
+  // the same size, so neighbouring header content never shifts
+  if (!friendsQuery.isSuccess) {
+    return <span aria-hidden className="h-[34px] w-32 rounded-lg bg-surface-2" />;
   }
 
   return (
@@ -40,7 +46,7 @@ export function FriendButton({ playerId }: { playerId: number }) {
       type="button"
       onClick={() => mutation.mutate()}
       disabled={mutation.isPending}
-      className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+      className={`h-[34px] w-32 rounded-lg text-center text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${
         isFriend
           ? "border border-line bg-surface-2 hover:bg-surface-3"
           : "bg-accent text-white hover:bg-accent-hover"
