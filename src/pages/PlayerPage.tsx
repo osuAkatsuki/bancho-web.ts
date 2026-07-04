@@ -14,6 +14,7 @@ import { EmptyState, ErrorState, LoadingState } from "@/components/states";
 import { Card } from "@/components/ui/Card";
 import { PillTabs } from "@/components/ui/PillTabs";
 import { api, type ScoreScope } from "@/lib/api/client";
+import { ApiError } from "@/lib/api/http";
 import type { MostPlayedMap, PlayerScore } from "@/lib/api/types";
 import { replayDownloadUrl } from "@/lib/assets";
 import {
@@ -45,7 +46,22 @@ export function PlayerPage() {
 
   const playerQuery = useQuery({
     queryKey: ["player", playerIdOrName],
-    queryFn: () => api.fetchPlayer(playerIdOrName),
+    queryFn: async () => {
+      try {
+        return await api.fetchPlayer(playerIdOrName);
+      } catch (error) {
+        // an all-digit username is shadowed by the id namespace; if no
+        // player has that id, retry the lookup as a username
+        if (
+          error instanceof ApiError &&
+          error.status === 404 &&
+          /^\d+$/.test(playerIdOrName)
+        ) {
+          return await api.fetchPlayer(playerIdOrName, { key: "username" });
+        }
+        throw error;
+      }
+    },
     enabled: playerIdOrName.length > 0,
     select: (envelope) => envelope.data,
   });
