@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { Avatar } from "@/components/Avatar";
+import { FriendButton } from "@/components/FriendButton";
 import { BeatmapThumb } from "@/components/BeatmapThumb";
 import { Flag } from "@/components/Flag";
 import { GradeBadge } from "@/components/GradeBadge";
@@ -139,7 +140,8 @@ export function PlayerPage() {
             </div>
           </div>
 
-          <div className="flex gap-7 text-right">
+          <div className="flex items-center gap-7 text-right">
+            <FriendButton playerId={player.id} />
             <div className="space-y-0.5">
               <p className="text-[11px] uppercase tracking-wider text-muted">
                 Global rank

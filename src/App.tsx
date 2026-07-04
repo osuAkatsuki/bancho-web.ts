@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { BeatmapPage } from "@/pages/BeatmapPage";
 import { ClanPage } from "@/pages/ClanPage";
 import { ClansPage } from "@/pages/ClansPage";
+import { FriendsPage } from "@/pages/FriendsPage";
 import { HomePage } from "@/pages/HomePage";
 import { LeaderboardPage } from "@/pages/LeaderboardPage";
 import { LoginPage } from "@/pages/LoginPage";
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/s/:scoreId" element={<ScorePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/friends" element={<FriendsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
