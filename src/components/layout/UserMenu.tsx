@@ -44,7 +44,9 @@ export function UserMenu() {
   }
 
   return (
-    <div ref={containerRef} className="relative">
+    // shrink-0: the navbar's full-width search would otherwise squeeze
+    // this below its content size, pushing the name out of the button
+    <div ref={containerRef} className="relative shrink-0">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -54,7 +56,7 @@ export function UserMenu() {
           playerId={player.id}
           className="h-8 w-8 rounded-lg bg-surface-2 object-cover"
         />
-        <span className="hidden text-sm font-medium sm:block">
+        <span className="hidden whitespace-nowrap text-sm font-medium sm:block">
           {player.name}
         </span>
       </button>
