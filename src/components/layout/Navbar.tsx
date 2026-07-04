@@ -12,7 +12,10 @@ const NAV_LINKS = [
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur">
+    // the sticky wrapper paints canvas behind the rounded corners so
+    // scrolling content never peeks through the notches
+    <div className="sticky top-0 z-40 bg-canvas">
+      <header className="rounded-b-2xl border-b border-line bg-surface">
       <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2.5">
           <svg viewBox="0 0 64 64" className="h-6 w-6" aria-hidden>
@@ -56,7 +59,8 @@ export function Navbar() {
           </div>
           <UserMenu />
         </div>
-      </div>
-    </header>
+        </div>
+      </header>
+    </div>
   );
 }

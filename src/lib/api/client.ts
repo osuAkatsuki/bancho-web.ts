@@ -44,7 +44,13 @@ export const api = {
       page_size: options.pageSize,
     }),
 
-  fetchPlayer: (playerId: number) => apiGet<Player>(`/v2/players/${playerId}`),
+  fetchPlayer: (
+    playerIdOrName: number | string,
+    options: { key?: "id" | "username" } = {},
+  ) =>
+    apiGet<Player>(`/v2/players/${encodeURIComponent(playerIdOrName)}`, {
+      key: options.key,
+    }),
 
   fetchPlayerStatus: (playerId: number) =>
     apiGet<PlayerStatus>(`/v2/players/${playerId}/status`),

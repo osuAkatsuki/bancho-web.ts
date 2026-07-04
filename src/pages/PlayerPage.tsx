@@ -16,6 +16,7 @@ import { PillTabs } from "@/components/ui/PillTabs";
 import { api, type ScoreScope } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/http";
 import type { MostPlayedMap, PlayerScore } from "@/lib/api/types";
+import { replayDownloadUrl } from "@/lib/assets";
 import {
   formatAccuracy,
   formatNumber,
@@ -37,17 +38,34 @@ const SCORE_TABS: { tab: ScoresTab; label: string }[] = [
 
 export function PlayerPage() {
   const params = useParams();
-  const playerId = Number(params.playerId);
+  // profiles resolve by numeric id or by username
+  const playerIdOrName = params.playerId ?? "";
 
   const [modeId, setModeId] = useState(0);
   const [tab, setTab] = useState<ScoresTab>("best");
 
   const playerQuery = useQuery({
-    queryKey: ["player", playerId],
-    queryFn: () => api.fetchPlayer(playerId),
-    enabled: Number.isInteger(playerId) && playerId > 0,
+    queryKey: ["player", playerIdOrName],
+    queryFn: async () => {
+      try {
+        return await api.fetchPlayer(playerIdOrName);
+      } catch (error) {
+        // an all-digit username is shadowed by the id namespace; if no
+        // player has that id, retry the lookup as a username
+        if (
+          error instanceof ApiError &&
+          error.status === 404 &&
+          /^\d+$/.test(playerIdOrName)
+        ) {
+          return await api.fetchPlayer(playerIdOrName, { key: "username" });
+        }
+        throw error;
+      }
+    },
+    enabled: playerIdOrName.length > 0,
     select: (envelope) => envelope.data,
   });
+  const playerId = playerQuery.data?.id ?? 0;
 
   const statsQuery = useQuery({
     queryKey: ["player-stats", playerId],
@@ -75,9 +93,6 @@ export function PlayerPage() {
 
   usePageTitle(playerQuery.data?.name);
 
-  if (!Number.isInteger(playerId) || playerId <= 0) {
-    return <ErrorState error={new ApiError("Invalid player id.", 400)} />;
-  }
   if (playerQuery.isPending) {
     return <LoadingState label="Loading player..." />;
   }
@@ -338,7 +353,14 @@ function ScoreList({
 function ScoreRow({ score }: { score: PlayerScore }) {
   const beatmap = score.beatmap;
   return (
-    <li className="flex items-center gap-3.5 overflow-hidden rounded-xl border border-line bg-surface pr-4 transition-colors hover:bg-surface-2">
+    // the whole row links to the score page via an overlay; inner links
+    // (the beatmap title) sit above it on the z axis
+    <li className="relative flex items-center gap-3.5 overflow-hidden rounded-xl border border-line bg-surface pr-4 transition-colors hover:bg-surface-2">
+      <Link
+        to={`/s/${score.id}`}
+        className="absolute inset-0"
+        aria-label="View score details"
+      />
       {beatmap ? (
         <BeatmapThumb setId={beatmap.set_id} className="h-12 w-[5.25rem] shrink-0" />
       ) : (
@@ -350,7 +372,7 @@ function ScoreRow({ score }: { score: PlayerScore }) {
         {beatmap ? (
           <Link
             to={`/b/${beatmap.id}`}
-            className="block truncate font-medium hover:text-accent"
+            className="relative z-10 block max-w-fit truncate font-medium hover:text-accent"
           >
             {beatmap.artist} - {beatmap.title}{" "}
             <span className="text-muted">[{beatmap.version}]</span>
@@ -366,18 +388,22 @@ function ScoreRow({ score }: { score: PlayerScore }) {
         </div>
       </div>
 
-      <Link
-        to={`/s/${score.id}`}
-        className="group block shrink-0 text-right"
-        title="View score details"
-      >
-        <p className="font-bold text-accent group-hover:text-accent-hover">
-          {formatPerformance(score.pp)}
-        </p>
+      <div className="shrink-0 text-right">
+        <p className="font-bold text-accent">{formatPerformance(score.pp)}</p>
         <p className="text-xs text-muted">
           {formatAccuracy(score.acc)} · {formatNumber(score.max_combo)}x
         </p>
-      </Link>
+      </div>
+
+      {score.grade !== "F" && (
+        <a
+          href={replayDownloadUrl(score.id)}
+          title="Download replay"
+          className="relative z-10 shrink-0 rounded-lg p-1.5 text-muted transition-colors hover:bg-surface-3 hover:text-slate-100"
+        >
+          <DownloadIcon />
+        </a>
+      )}
     </li>
   );
 }
@@ -430,5 +456,22 @@ function MostPlayedRow({ map }: { map: MostPlayedMap }) {
         <p className="text-xs text-muted">plays</p>
       </div>
     </li>
+  );
+}
+
+function DownloadIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+      aria-hidden
+    >
+      <path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14" />
+    </svg>
   );
 }

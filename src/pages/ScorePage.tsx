@@ -9,7 +9,7 @@ import { ErrorState, LoadingState } from "@/components/states";
 import { Card } from "@/components/ui/Card";
 import { api } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/http";
-import { beatmapCoverUrl } from "@/lib/assets";
+import { beatmapCoverUrl, replayDownloadUrl } from "@/lib/assets";
 import {
   formatAccuracy,
   formatDate,
@@ -139,6 +139,17 @@ export function ScorePage() {
             value={`${formatNumber(score.ngeki)} / ${formatNumber(score.nkatu)}`}
           />
         </div>
+
+        {score.grade !== "F" && (
+          <div className="border-t border-line px-5 py-3">
+            <a
+              href={replayDownloadUrl(score.id)}
+              className="inline-block rounded-lg border border-line bg-surface-2 px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-surface-3"
+            >
+              Download replay
+            </a>
+          </div>
+        )}
       </Card>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { FavouriteButton } from "@/components/FavouriteButton";
 import { Flag } from "@/components/Flag";
@@ -173,6 +173,7 @@ function MapStat({
 }
 
 function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
+  const navigate = useNavigate();
   const { data, isPending, error } = useQuery({
     queryKey: ["beatmap-scores", mapId, modeId],
     queryFn: () => api.fetchBeatmapScores(mapId, { mode: modeId, limit: 50 }),
@@ -211,7 +212,9 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
           {data.map((score, index) => (
             <tr
               key={score.id}
-              className="border-b border-line/50 last:border-b-0 hover:bg-surface-2"
+              onClick={() => navigate(`/s/${score.id}`)}
+              title="View score details"
+              className="cursor-pointer border-b border-line/50 last:border-b-0 hover:bg-surface-2"
             >
               <td className="px-4 py-2 text-right font-semibold text-muted">
                 #{index + 1}
@@ -230,6 +233,7 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
                     )}
                     <Link
                       to={`/u/${score.player.id}`}
+                      onClick={(event) => event.stopPropagation()}
                       className="font-medium hover:text-accent"
                     >
                       {score.player.name}
@@ -239,16 +243,10 @@ function MapLeaderboard({ mapId, modeId }: { mapId: number; modeId: number }) {
                   <span className="text-muted">Unknown player</span>
                 )}
               </td>
-              <td className="px-4 py-2 text-right font-semibold">
-                <Link
-                  to={`/s/${score.id}`}
-                  className="text-accent hover:text-accent-hover"
-                  title="View score details"
-                >
-                  {showsPerformanceFirst
-                    ? formatPerformance(score.pp)
-                    : formatNumber(score.score)}
-                </Link>
+              <td className="px-4 py-2 text-right font-semibold text-accent">
+                {showsPerformanceFirst
+                  ? formatPerformance(score.pp)
+                  : formatNumber(score.score)}
               </td>
               <td className="px-4 py-2 text-right text-muted">
                 {formatAccuracy(score.acc)}
