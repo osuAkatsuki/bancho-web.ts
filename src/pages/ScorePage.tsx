@@ -33,11 +33,7 @@ export function ScorePage() {
 
   usePageTitle(
     data
-      ? `${data.player.name} on ${
-          data.beatmap
-            ? `${data.beatmap.artist} - ${data.beatmap.title}`
-            : "unknown beatmap"
-        }`
+      ? `${data.player.name} on ${data.beatmap.artist} - ${data.beatmap.title}`
       : undefined,
   );
 
@@ -59,31 +55,23 @@ export function ScorePage() {
       <Card padded={false}>
         {/* beatmap backdrop */}
         <div className="relative h-36">
-          {beatmap && (
-            <img
-              src={beatmapCoverUrl(beatmap.set_id)}
-              alt=""
-              className="h-full w-full object-cover"
-              onError={(event) => {
-                event.currentTarget.style.display = "none";
-              }}
-            />
-          )}
+          <img
+            src={beatmapCoverUrl(beatmap.set_id)}
+            alt=""
+            className="h-full w-full object-cover"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
           <div className="absolute inset-x-5 bottom-3">
-            {beatmap ? (
-              <Link
-                to={`/b/${beatmap.id}`}
-                className="block truncate text-lg font-semibold hover:text-accent"
-              >
-                {beatmap.artist} - {beatmap.title}{" "}
-                <span className="text-muted">[{beatmap.version}]</span>
-              </Link>
-            ) : (
-              <span className="block text-lg font-semibold text-muted">
-                Unknown beatmap
-              </span>
-            )}
+            <Link
+              to={`/b/${beatmap.id}`}
+              className="block truncate text-lg font-semibold hover:text-accent"
+            >
+              {beatmap.artist} - {beatmap.title}{" "}
+              <span className="text-muted">[{beatmap.version}]</span>
+            </Link>
           </div>
         </div>
 
