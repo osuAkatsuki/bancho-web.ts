@@ -292,8 +292,9 @@ function UserpageSection({ player }: { player: Player }) {
     setSaved(false);
     setIsSaving(true);
     try {
+      // an emptied userpage is cleared server-side (stored as null)
       const updated = await api.updateProfile(player.id, {
-        userpage_content: content,
+        userpage_content: content === "" ? null : content,
       });
       updatePlayer(updated.data);
       setSaved(true);

@@ -142,7 +142,7 @@ export const api = {
       username?: string;
       country?: string;
       preferred_mode?: number;
-      userpage_content?: string;
+      userpage_content?: string | null;
     },
   ) => apiPatch<Player>(`/v2/players/${playerId}`, args),
 
