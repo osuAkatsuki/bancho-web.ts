@@ -10,6 +10,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PlayerPage } from "@/pages/PlayerPage";
 import { RegisterPage } from "@/pages/RegisterPage";
+import { ScorePage } from "@/pages/ScorePage";
 import { SettingsPage } from "@/pages/SettingsPage";
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/clan/:clanId" element={<ClanPage />} />
         <Route path="/u/:playerId" element={<PlayerPage />} />
         <Route path="/b/:mapId" element={<BeatmapPage />} />
+        <Route path="/s/:scoreId" element={<ScorePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/settings" element={<SettingsPage />} />

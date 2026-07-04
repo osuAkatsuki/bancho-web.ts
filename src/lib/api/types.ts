@@ -160,7 +160,16 @@ export interface ScorePlayer {
   clan_tag: string | null;
 }
 
+export interface ScoreDetail extends Omit<PlayerScore, "beatmap"> {
+  userid: number;
+  // score permalinks 404 once their map version is gone, so unlike
+  // profile listings the beatmap is always present here
+  beatmap: ScoreBeatmap;
+  player: ScorePlayer;
+}
+
 export interface MapScore {
+  id: number;
   map_md5: string;
   score: number;
   pp: number;

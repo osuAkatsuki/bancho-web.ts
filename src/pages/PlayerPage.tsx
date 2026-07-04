@@ -364,12 +364,18 @@ function ScoreRow({ score }: { score: PlayerScore }) {
         </div>
       </div>
 
-      <div className="text-right">
-        <p className="font-bold text-accent">{formatPerformance(score.pp)}</p>
+      <Link
+        to={`/s/${score.id}`}
+        className="group block shrink-0 text-right"
+        title="View score details"
+      >
+        <p className="font-bold text-accent group-hover:text-accent-hover">
+          {formatPerformance(score.pp)}
+        </p>
         <p className="text-xs text-muted">
           {formatAccuracy(score.acc)} · {formatNumber(score.max_combo)}x
         </p>
-      </div>
+      </Link>
     </li>
   );
 }
