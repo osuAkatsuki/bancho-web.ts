@@ -16,6 +16,7 @@ import { PillTabs } from "@/components/ui/PillTabs";
 import { api, type ScoreScope } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/http";
 import type { MostPlayedMap, PlayerScore } from "@/lib/api/types";
+import { replayDownloadUrl } from "@/lib/assets";
 import {
   formatAccuracy,
   formatNumber,
@@ -379,6 +380,16 @@ function ScoreRow({ score }: { score: PlayerScore }) {
           {formatAccuracy(score.acc)} · {formatNumber(score.max_combo)}x
         </p>
       </div>
+
+      {score.grade !== "F" && (
+        <a
+          href={replayDownloadUrl(score.id)}
+          title="Download replay"
+          className="relative z-10 shrink-0 rounded-lg p-1.5 text-muted transition-colors hover:bg-surface-3 hover:text-slate-100"
+        >
+          <DownloadIcon />
+        </a>
+      )}
     </li>
   );
 }
@@ -431,5 +442,22 @@ function MostPlayedRow({ map }: { map: MostPlayedMap }) {
         <p className="text-xs text-muted">plays</p>
       </div>
     </li>
+  );
+}
+
+function DownloadIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+      aria-hidden
+    >
+      <path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14" />
+    </svg>
   );
 }
