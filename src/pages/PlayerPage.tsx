@@ -14,7 +14,6 @@ import { EmptyState, ErrorState, LoadingState } from "@/components/states";
 import { Card } from "@/components/ui/Card";
 import { PillTabs } from "@/components/ui/PillTabs";
 import { api, type ScoreScope } from "@/lib/api/client";
-import { ApiError } from "@/lib/api/http";
 import type { MostPlayedMap, PlayerScore } from "@/lib/api/types";
 import { replayDownloadUrl } from "@/lib/assets";
 import {
@@ -38,17 +37,19 @@ const SCORE_TABS: { tab: ScoresTab; label: string }[] = [
 
 export function PlayerPage() {
   const params = useParams();
-  const playerId = Number(params.playerId);
+  // profiles resolve by numeric id or by username
+  const playerIdOrName = params.playerId ?? "";
 
   const [modeId, setModeId] = useState(0);
   const [tab, setTab] = useState<ScoresTab>("best");
 
   const playerQuery = useQuery({
-    queryKey: ["player", playerId],
-    queryFn: () => api.fetchPlayer(playerId),
-    enabled: Number.isInteger(playerId) && playerId > 0,
+    queryKey: ["player", playerIdOrName],
+    queryFn: () => api.fetchPlayer(playerIdOrName),
+    enabled: playerIdOrName.length > 0,
     select: (envelope) => envelope.data,
   });
+  const playerId = playerQuery.data?.id ?? 0;
 
   const statsQuery = useQuery({
     queryKey: ["player-stats", playerId],
@@ -76,9 +77,6 @@ export function PlayerPage() {
 
   usePageTitle(playerQuery.data?.name);
 
-  if (!Number.isInteger(playerId) || playerId <= 0) {
-    return <ErrorState error={new ApiError("Invalid player id.", 400)} />;
-  }
   if (playerQuery.isPending) {
     return <LoadingState label="Loading player..." />;
   }
